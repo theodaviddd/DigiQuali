@@ -344,7 +344,7 @@ BeCarefullVerdictKO                            = Attention si le statut de votre
 ShowQcFrequencyPublicInterface                 = Afficher la période de validé (en jours) sur l'interface publique de contrôle
 ShowQcFrequencyPublicInterfaceDescription      = Option permettant l'affichage la période de validé (en jours) sur l'interface publique de contrôle
 GenerateSheetTags                              = Vous n'avez pas généré de catégories principales, veuillez cliquer ici pour vous rendre sur la page de configuration
-
+MassControl                                    = Contrôle en masse
 
 
 #
