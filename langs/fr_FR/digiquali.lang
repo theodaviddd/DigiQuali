@@ -347,7 +347,7 @@ GenerateSheetTags                              = Vous n'avez pas généré de ca
 MassControl                                    = Contrôle en masse
 LinkedControlList                              = Liste des contrôles liés
 NewMassControl                                 = Nouveau contrôle en masse
-
+ControlledObject                               = Objet contrôlé
 
 #
 # ControlDet
