@@ -345,6 +345,8 @@ ShowQcFrequencyPublicInterface                 = Afficher la période de validé
 ShowQcFrequencyPublicInterfaceDescription      = Option permettant l'affichage la période de validé (en jours) sur l'interface publique de contrôle
 GenerateSheetTags                              = Vous n'avez pas généré de catégories principales, veuillez cliquer ici pour vous rendre sur la page de configuration
 MassControl                                    = Contrôle en masse
+LinkedControlList                              = Liste des contrôles liés
+NewMassControl                                 = Nouveau contrôle en masse
 
 
 #
@@ -359,6 +361,7 @@ AnswerPhoto                             = Photo
 AutoSaveActionQuestionAnswer            = Sauvegarde automatique des réponses aux questions
 AutoSaveActionQuestionAnswerDescription = Sauvegarde automatiquement les réponses aux questions lors du choix de la réponse
 NoObjectLineAnswersPhoto                = Pas de photos sur les réponses du %s
+Answers                                 = Réponses
 
 #
 # ControlDocument - Fiche de Contrôle
