@@ -41,6 +41,15 @@ window.digiquali.control.event = function() {
   $(document).on('click', '.validateSubControl:not(.butActionRefused)', window.digiquali.control.validateSubControl);
   $(document).on('click', '.reopenSubControl:not(.butActionRefused)', window.digiquali.control.reopenSubControl);
   $(document).on('click', '.lockSubControl:not(.butActionRefused)', window.digiquali.control.lockSubControl);
+  $(document).ready(function() {
+    $('.verdict-box').on('click', function(event) {
+      if ($(this).hasClass('disabled')) {
+        event.stopPropagation();
+        event.preventDefault();  
+      }
+    });
+  });
+
 
 };
 
