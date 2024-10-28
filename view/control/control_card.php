@@ -939,7 +939,21 @@ if ($object->id > 0 && (empty($action) || ($action != 'create'))) {
     <div class="progress-info">
         <span class="badge badge-info" style="margin-right: 10px;"><?php print $answerCounter . '/' . $questionCounter; ?></span>
         <div class="progress-bar" style="margin-right: 10px;">
-            <div class="progress progress-bar-success" style="width:<?php print ($questionCounter > 0 ? ($answerCounter / $questionCounter) * 100 : 0) . '%'; ?>;" title="<?php print($questionCounter > 0 ? $answerCounter . '/' . $questionCounter : 0); ?>"></div>
+            <?php
+            if ($questionCounter > 0) {
+                $percentage = ($answerCounter / $questionCounter) * 100;
+            } else {
+                $percentage = 0;
+            }
+            if ($percentage == 100) {
+                $class = 'progress-bar-success';
+            } elseif ($percentage > 0) {
+                $class = 'progress-bar-warning';
+            } else {
+                $class = 'progress-bar-danger';
+            }
+            print ('<progress class="progress ' . $class . '" max="100" value="' . $percentage . '" style="width: 100%;" title="' . ($questionCounter > 0 ? $answerCounter . '/' . $questionCounter : 0) . '"></progress>');
+            ?>
         </div>
         <?php if ($answerCounter != $questionCounter) {
             print img_picto($langs->trans(!empty($user->conf->DIGIQUALI_SHOW_ONLY_QUESTIONS_WITH_NO_ANSWER) ? 'Enabled' : 'Disabled'), !empty($user->conf->DIGIQUALI_SHOW_ONLY_QUESTIONS_WITH_NO_ANSWER) ? 'switch_on' : 'switch_off', 'data-toggle-action="show_only_questions_with_no_answer" data-toggle-key="show_only_questions_with_no_answer" data-update-targets=".progress-info,.question-answer-container" class="marginrightonly"');
