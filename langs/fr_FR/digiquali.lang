@@ -369,6 +369,20 @@ AutoSaveActionQuestionAnswer            = Sauvegarde automatique des réponses a
 AutoSaveActionQuestionAnswerDescription = Sauvegarde automatiquement les réponses aux questions lors du choix de la réponse
 NoObjectLineAnswersPhoto                = Pas de photos sur les réponses du %s
 
+
+
+#
+# Groupes de questions
+#
+
+# Data - Donnée
+QuestionGroup                      = Groupe de questions
+QuestionGroups                     = Groupes de questions
+NewQuestionGroup                   = Nouveau groupe de questions
+ModifyQuestionGroup                = Modifier un groupe de questions
+
+
+
 #
 # ControlDocument - Fiche de Contrôle
 #

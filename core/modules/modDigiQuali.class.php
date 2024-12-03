@@ -202,7 +202,7 @@ class modDigiQuali extends DolibarrModules
             $i++ => ['DIGIQUALI_SHEET_BACKWARD_COMPATIBILITY', 'integer', 0, '', 0, 'current'],
 
 			// CONST QUESTION
-			$i++ => ['DIGIQUALI_QUESTION_ADDON', 'chaine', 'mod_question_standard', '', 0, 'current'],
+			$i++ => ['DIGIQUALI_QUESTION_ADDON', 'chaine', 'mod_question_group_standard', '', 0, 'current'],
             $i++ => ['DIGIQUALI_QUESTION_BACKWARD_COMPATIBILITY', 'integer', 1, '', 0, 'current'],
 
 			// CONST ANSWER
@@ -472,6 +472,23 @@ class modDigiQuali extends DolibarrModules
         $this->rights[$r][5] = 'delete'; // In php code, permission will be checked by test if ($user->rights->digiquali->level1->level2)
         $r++;
 
+        /* QUESTION GROUP PERMISSIONS */
+        $this->rights[$r][0] = $this->numero . sprintf('%02d', $r + 1); // Permission id (must not be already used)
+        $this->rights[$r][1] = $langs->transnoentities('ReadObjects', dol_strtolower($langs->transnoentities('QuestionGroups'))); // Permission label
+        $this->rights[$r][4] = 'question_group'; // In php code, permission will be checked by test if ($user->rights->digiquali->level1->level2)
+        $this->rights[$r][5] = 'read'; // In php code, permission will be checked by test if ($user->rights->digiquali->level1->level2)
+        $r++;
+        $this->rights[$r][0] = $this->numero . sprintf('%02d', $r + 1); // Permission id (must not be already used)
+        $this->rights[$r][1] = $langs->transnoentities('CreateObjects', dol_strtolower($langs->transnoentities('QuestionGroups'))); // Permission label
+        $this->rights[$r][4] = 'question_group'; // In php code, permission will be checked by test if ($user->rights->digiquali->level1->level2)
+        $this->rights[$r][5] = 'write'; // In php code, permission will be checked by test if ($user->rights->digiquali->level1->level2)
+        $r++;
+        $this->rights[$r][0] = $this->numero . sprintf('%02d', $r + 1); // Permission id (must not be already used)
+        $this->rights[$r][1] = $langs->transnoentities('DeleteObjects', dol_strtolower($langs->transnoentities('QuestionGroups'))); // Permission label
+        $this->rights[$r][4] = 'question_group'; // In php code, permission will be checked by test if ($user->rights->digiquali->level1->level2)
+        $this->rights[$r][5] = 'delete'; // In php code, permission will be checked by test if ($user->rights->digiquali->level1->level2)
+        $r++;
+
 		/* ADMINPAGE PANEL ACCESS PERMISSIONS */
 		$this->rights[$r][0] = $this->numero . sprintf('%02d', $r + 1);
 		$this->rights[$r][1] = $langs->transnoentities('ReadAdminPage', 'DigiQuali');
@@ -598,20 +615,20 @@ class modDigiQuali extends DolibarrModules
 		];
 
         $this->menu[$r++] = [
-            'fk_menu'  => 'fk_mainmenu=digiquali',
-            'type'     => 'left',
-            'titre'    => $langs->transnoentities('Survey'),
-            'prefix'   => '<i class="fas fa-marker pictofixedwidth"></i>',
-            'mainmenu' => 'digiquali',
-            'leftmenu' => 'digiquali_survey',
-            'url'      => '/digiquali/view/survey/survey_list.php',
-            'langs'    => 'digiquali@digiquali',
-            'position' => 1000 + $r,
-            'enabled'  => '$conf->digiquali->enabled && $user->rights->digiquali->survey->read',
-            'perms'    => '$user->rights->digiquali->survey->read',
-            'target'   => '',
-            'user'     => 0,
-        ];
+        'fk_menu'  => 'fk_mainmenu=digiquali',
+        'type'     => 'left',
+        'titre'    => $langs->transnoentities('Survey'),
+        'prefix'   => '<i class="fas fa-marker pictofixedwidth"></i>',
+        'mainmenu' => 'digiquali',
+        'leftmenu' => 'digiquali_survey',
+        'url'      => '/digiquali/view/survey/survey_list.php',
+        'langs'    => 'digiquali@digiquali',
+        'position' => 1000 + $r,
+        'enabled'  => '$conf->digiquali->enabled && $user->rights->digiquali->survey->read',
+        'perms'    => '$user->rights->digiquali->survey->read',
+        'target'   => '',
+        'user'     => 0,
+    ];
 
         $this->menu[$r++] = [
             'fk_menu'  => 'fk_mainmenu=digiquali,fk_leftmenu=digiquali_survey',
@@ -624,6 +641,37 @@ class modDigiQuali extends DolibarrModules
             'position' => 1000 + $r,
             'enabled'  => '$conf->digiquali->enabled && $conf->categorie->enabled && $user->rights->digiquali->survey->read',
             'perms'    => '$user->rights->digiquali->survey->read',
+            'target'   => '',
+            'user'     => 0,
+        ];
+
+        $this->menu[$r++] = [
+            'fk_menu'  => 'fk_mainmenu=digiquali',
+            'type'     => 'left',
+            'titre'    => $langs->transnoentities('QuestionGroup'),
+            'prefix'   => '<i class="fas fa-group pictofixedwidth"></i>',
+            'mainmenu' => 'digiquali',
+            'leftmenu' => 'digiquali_question_group',
+            'url'      => '/digiquali/view/question_group/question_group_list.php',
+            'langs'    => 'digiquali@digiquali',
+            'position' => 1000 + $r,
+            'enabled'  => '$conf->digiquali->enabled && $user->rights->digiquali->question_group->read',
+            'perms'    => '$user->rights->digiquali->question_group->read',
+            'target'   => '',
+            'user'     => 0,
+        ];
+
+        $this->menu[$r++] = [
+            'fk_menu'  => 'fk_mainmenu=digiquali,fk_leftmenu=digiquali_question_group',
+            'type'     => 'left',
+            'titre'    => '<i class="fas fa-tags pictofixedwidth" style="padding-right: 4px;"></i>' . $langs->transnoentities('Categories'),
+            'mainmenu' => 'digiquali',
+            'leftmenu' => 'digiquali_question_groupytags',
+            'url'      => '/categories/index.php?type=question_group',
+            'langs'    => 'digiquali@digiquali',
+            'position' => 1000 + $r,
+            'enabled'  => '$conf->digiquali->enabled && $conf->categorie->enabled && $user->rights->digiquali->question_group->read',
+            'perms'    => '$user->rights->digiquali->question_group->read',
             'target'   => '',
             'user'     => 0,
         ];
