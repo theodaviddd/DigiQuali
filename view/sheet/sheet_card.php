@@ -36,7 +36,7 @@ require_once DOL_DOCUMENT_ROOT . '/categories/class/categorie.class.php';
 
 require_once __DIR__ . '/../../class/sheet.class.php';
 require_once __DIR__ . '/../../class/question.class.php';
-require_once __DIR__ . '/../../class/question_group.class.php';
+require_once __DIR__ . '/../../class/questiongroup.class.php';
 require_once __DIR__ . '/../../lib/digiquali_sheet.lib.php';
 
 // Global variables definitions
@@ -733,26 +733,26 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '">';
 			print '<input type="hidden" name="token" value="' . newToken() . '">';
 			print '<input type="hidden" name="action" value="set_mandatory">';
-			print '<input type="hidden" name="questionId" value="' . $item->id . '">';
-			print '<input type="hidden" name="questionRef" value="' . $item->ref . '">';
-			print '<input type="checkbox" onchange="submit();" id="mandatory" name="mandatory" value="' . $item->id . '"' . (in_array($item->id, $mandatoryArray) ? ' checked ' : '') . '" ' . ($object->status < Sheet::STATUS_LOCKED ? '>' : 'disabled>');
+			print '<input type="hidden" name="questionId" value="' . $questionOrGroup->id . '">';
+			print '<input type="hidden" name="questionRef" value="' . $questionOrGroup->ref . '">';
+			print '<input type="checkbox" onchange="submit();" id="mandatory" name="mandatory" value="' . $questionOrGroup->id . '"' . (in_array($questionOrGroup->id, $mandatoryArray) ? ' checked ' : '') . '" ' . ($object->status < Sheet::STATUS_LOCKED ? '>' : 'disabled>');
 			print '</form>';
 			print '</td>';
 
 			print '<td class="center">';
-			print saturne_show_medias_linked('digiquali',$conf->digiquali->multidir_output[$conf->entity] . '/question/' . $item->ref . '/photo_ok',1,'',0,0,0,50,50,0,0,0,'question/' . $item->ref . '/photo_ok',$item,'photo_ok',0,0,1,1);
+			print saturne_show_medias_linked('digiquali',$conf->digiquali->multidir_output[$conf->entity] . '/question/' . $questionOrGroup->ref . '/photo_ok',1,'',0,0,0,50,50,0,0,0,'question/' . $questionOrGroup->ref . '/photo_ok',$questionOrGroup,'photo_ok',0,0,1,1);
 			print '</td>';
             print '<td class="center">';
-			print saturne_show_medias_linked('digiquali',$conf->digiquali->multidir_output[$conf->entity] . '/question/' . $item->ref . '/photo_ko',1,'',0,0,0,50,50,0,0,0,'question/' . $item->ref . '/photo_ko',$item,'photo_ko',0,0,1,1);
+			print saturne_show_medias_linked('digiquali',$conf->digiquali->multidir_output[$conf->entity] . '/question/' . $questionOrGroup->ref . '/photo_ko',1,'',0,0,0,50,50,0,0,0,'question/' . $questionOrGroup->ref . '/photo_ko',$questionOrGroup,'photo_ko',0,0,1,1);
 			print '</td>';
 
 			print '<td class="center">';
-			print $item->getLibStatut(5);
+			print $questionOrGroup->getLibStatut(5);
 			print '</td>';
 
 			print '<td class="center">';
 			if ($object->status < $object::STATUS_LOCKED) {
-				print '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=unlinkQuestion&questionId=' . $item->id . '">';
+				print '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=unlinkQuestion&questionId=' . $questionOrGroup->id . '">';
 				print img_delete();
 				print '</a>';
 			}

@@ -518,7 +518,7 @@ class Sheet extends SaturneObject
             $sql .= ' WHERE fk_source = ' . $this->id;
             $sql .= ' AND sourcetype = "digiquali_sheet"';
             $sql .= ' AND fk_target = ' . $questionIds[$position];
-            $sql .= ' AND targettype = "digiquali_question" OR "digiquali_question_group"';
+            $sql .= ' AND targettype = "digiquali_question" OR "digiquali_questiongroup"';
             $res = $this->db->query($sql);
 
             if (!$res) {
@@ -534,9 +534,9 @@ class Sheet extends SaturneObject
 
 
     public function fetchQuestionsAndGroups() {
-        $object->fetchObjectLinked($id, 'digiquali_' . $object->element, null, '', 'OR', 1, 'position');
-        $questionIds = $object->linkedObjectsIds['digiquali_question'];
-        $groupIds = $object->linkedObjectsIds['digiquali_question_group'];
+        $this->fetchObjectLinked($id, 'digiquali_' . $this->element, null, '', 'OR', 1, 'position');
+        $questionIds = $this->linkedObjects['digiquali_question'];
+        $groupIds = $this->linkedObjects['digiquali_questiongroup'];
 
         $questionIds = array_merge($questionIds, $groupIds);
 

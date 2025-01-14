@@ -39,8 +39,8 @@ require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
 
 // load digiquali libraries
 require_once __DIR__ . '/../../class/sheet.class.php';
-require_once __DIR__ . '/../../class/question_group.class.php';
-require_once __DIR__ . '/../../class/question_group.class.php';
+require_once __DIR__ . '/../../class/questiongroup.class.php';
+require_once __DIR__ . '/../../class/questiongroup.class.php';
 require_once __DIR__ . '/../../class/answer.class.php';
 
 // Global variables definitions
