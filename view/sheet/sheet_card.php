@@ -120,9 +120,11 @@ if (empty($reshook)) {
             $questionGroup->add_object_linked('digiquali_' . $object->element, $id);
 
             $object->fetchObjectLinked($id, 'digiquali_' . $object->element, null, '', 'OR', 1, 'position', 0);
+            $questionIds   = $object->linkedObjectsIds['digiquali_question'];
+            $questionIds[] = $question->id;
             $questionGroupIds = $object->linkedObjectsIds['digiquali_question_group'];
             $questionGroupIds[] = $questionGroup->id;
-            $object->updateQuestionsAndGroupsPosition($questionGroupIds);
+            $object->updateQuestionsAndGroupsPosition($questionIds, $questionGroupIds);
 
             $object->call_trigger('SHEET_ADDQUESTIONGROUP', $user);
             setEventMessages($langs->trans('AddQuestionGroupLink', 1) . ' ' . $questionGroup->ref, []);
@@ -133,12 +135,15 @@ if (empty($reshook)) {
 		$questionId = GETPOST('questionId');
 		if ($questionId > 0) {
 			$question->fetch($questionId);
+
 			$question->add_object_linked('digiquali_' . $object->element,$id);
 
 			$object->fetchObjectLinked($id, 'digiquali_' . $object->element, null, '', 'OR', 1, 'position', 0);
             $questionIds   = $object->linkedObjectsIds['digiquali_question'];
             $questionIds[] = $question->id;
-			$object->updateQuestionsAndGroupsPosition($questionIds);
+            $questionGroupIds = $object->linkedObjectsIds['digiquali_question_group'];
+            $questionGroupIds[] = $questionGroup->id;
+			$object->updateQuestionsAndGroupsPosition($questionIds, $questionGroupIds);
 
 			$object->call_trigger('SHEET_ADDQUESTION', $user);
 			setEventMessages($langs->trans('AddQuestionLink', 1) . ' ' . $question->ref, []);
@@ -797,6 +802,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     }
 
 
+    // Ensure distinct actions are set in the form
     if ($object->status < $object::STATUS_LOCKED) {
         print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '" id="addQuestionForm">';
         print '<input type="hidden" name="token" value="' . newToken() . '">';
@@ -813,9 +819,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         print '</td>';
         print '</tr>';
 
-        // Section for adding a question
+        // Form for adding a question
+        print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '" id="addQuestionForm">';
+        print '<input type="hidden" name="token" value="' . newToken() . '">';
+        print '<input type="hidden" name="id" value="' . $id . '">';
+
         print '<tr id="addQuestionRow" class="hidden">';
-        print '<td class=" widthcentpercentminusx">';
+        print '<td class="widthcentpercentminusx">';
         print img_picto('', $question->picto, 'class="pictofixedwidth"') . $question->selectQuestionList(0, 'questionId', 's.status = ' . Question::STATUS_LOCKED, '1', 0, 0, array(), '', 0, 0, 'maxwidth600 minwidth400 widthcentpercentminusx', '', false, $questionsAndGroupsIdsArray['question']);
         print '</td>';
         print '<td>';
@@ -823,17 +833,23 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         print '<input type="submit" id="actionButtonAdd" class="button hideifnotset button-save" name="add" value="' . $langs->trans("Add") . '">';
         print '</td><td colspan="8">';
         print '</td></tr>';
+        print '</form>';
 
-        // Section for adding a group
+// Form for adding a group
+        print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '" id="addGroupForm">';
+        print '<input type="hidden" name="token" value="' . newToken() . '">';
+        print '<input type="hidden" name="id" value="' . $id . '">';
+
         print '<tr id="addGroupRow" class="hidden">';
-        print '<td class=" widthcentpercentminusx">';
-        print '<input type="hidden" name="action" value="addQuestionGroup">';
+        print '<td class="widthcentpercentminusx">';
         print img_picto('', $questionGroup->picto, 'class="pictofixedwidth"') . $questionGroup->selectQuestionGroupList(0, 'questionGroupId', 's.status = ' . QuestionGroup::STATUS_VALIDATED, '1', 0, 0, array(), '', 0, 0, 'maxwidth600 minwidth400 widthcentpercentminusx', '', false, $questionsAndGroupsIdsArray['questiongroup']);
         print '</td>';
         print '<td>';
+        print '<input type="hidden" name="action" value="addQuestionGroup">';
         print '<input type="submit" id="actionButtonAddQuestionGroup" class="button hideifnotset button-save" name="add" value="' . $langs->trans("Add") . '">';
         print '</td><td colspan="8">';
         print '</td></tr>';
+
 
         print '</form>';
     }

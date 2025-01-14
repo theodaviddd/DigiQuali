@@ -507,17 +507,20 @@ class Sheet extends SaturneObject
      *
      * @param array $questionIds Array containing position and ids of questions and group questions in sheet
      */
-    public function updateQuestionsAndGroupsPosition(array $questionIds)
+    public function updateQuestionsAndGroupsPosition(array $questionIds, array $questionGroupIds)
     {
         $this->db->begin();
 
         $questionIds = array_values($questionIds);
-        for ($position = 0; $position < count($questionIds); $position++) {
+        $questionGroupIds = array_values($questionGroupIds);
+        $questionAndGroupIds = array_merge($questionIds, $questionGroupIds);
+
+        for ($position = 0; $position < count($questionAndGroupIds); $position++) {
             $sql = 'UPDATE '. MAIN_DB_PREFIX . 'element_element';
             $sql .= ' SET position = ' . $position;
             $sql .= ' WHERE fk_source = ' . $this->id;
             $sql .= ' AND sourcetype = "digiquali_sheet"';
-            $sql .= ' AND fk_target = ' . $questionIds[$position];
+            $sql .= ' AND fk_target = ' . $questionAndGroupIds[$position];
             $sql .= ' AND targettype = "digiquali_question" OR "digiquali_questiongroup"';
             $res = $this->db->query($sql);
 
@@ -537,6 +540,16 @@ class Sheet extends SaturneObject
         $this->fetchObjectLinked($id, 'digiquali_' . $this->element, null, '', 'OR', 1, 'position');
         $questionIds = $this->linkedObjects['digiquali_question'];
         $groupIds = $this->linkedObjects['digiquali_questiongroup'];
+
+        // if only groups are filled, return groups, else return questions if they are filled else return array merge
+
+        if (empty($questionIds) && !empty($groupIds)) {
+            return $groupIds;
+        } elseif (!empty($questionIds) && empty($groupIds)) {
+            return $questionIds;
+        } else if (empty($questionIds) && empty($groupIds)) {
+            return [];
+        }
 
         $questionIds = array_merge($questionIds, $groupIds);
 

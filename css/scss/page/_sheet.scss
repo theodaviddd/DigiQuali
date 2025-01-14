@@ -25,6 +25,19 @@
   transform: translateY(-2px);
 }
 
+.reposition {
+  display: inline-block;
+  color: #d9534f; /* Rouge par défaut pour signifier une action de suppression */
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.reposition:hover {
+  color: #c9302c;
+  text-decoration: underline;
+}
+
+
 .question-group {
   background-color: #f5f5f5;
   font-weight: bold;
