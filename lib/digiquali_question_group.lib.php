@@ -31,7 +31,7 @@ require_once __DIR__ . '/../../saturne/lib/object.lib.php';
  * @return array            Array of tabs.
  * @throws Exception
  */
-function question_group_prepare_head(QuestionGroup $object): array
+function questiongroup_prepare_head(QuestionGroup $object): array
 {
     return saturne_object_prepare_head($object);
 }

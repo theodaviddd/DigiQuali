@@ -37,7 +37,7 @@ class QuestionGroup extends SaturneObject
     /**
      * @var string Element type of object
      */
-    public $element = 'question_group';
+    public $element = 'questiongroup';
 
     /**
      * @var string Name of table without prefix where object is stored. This is also the key used for extrafields management
@@ -58,7 +58,7 @@ class QuestionGroup extends SaturneObject
     /**
      * @var string Name of icon for control. Must be a 'fa-xxx' fontawesome code (or 'fa-xxx_fa_color_size') or 'control@digiquali' if picto is file 'img/object_control.png'
      */
-    public string $picto = 'fontawesome_fa-question_group_fas_#d35968';
+    public string $picto = 'fontawesome_fa-folder_fas_#d35968';
 
     public const STATUS_DELETED   = -1;
     public const STATUS_DRAFT     = 0;
@@ -565,7 +565,7 @@ class QuestionGroup extends SaturneObject
         $sql = 'SELECT fk_source';
         $sql .= ' FROM ' . MAIN_DB_PREFIX . 'element_element';
         $sql .= ' WHERE fk_target = ' . $this->id;
-        $sql .= ' AND targettype = \'digiquali_question_group\'';
+        $sql .= ' AND targettype = \'digiquali_questiongroup\'';
         $sql .= ' AND sourcetype = \'digiquali_question\'';
         $sql .= ' ORDER BY position ASC';
         $res = $this->db->query($sql);

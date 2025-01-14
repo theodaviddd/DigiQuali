@@ -693,79 +693,108 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	</script>
 	<?php
 	// Lines
-	print '<thead><tr class="liste_titre">';
-	print '<td class="maxwidth300 widthcentpercentminusx">' . $langs->trans('Ref') . '</td>';
-	print '<td>' . $langs->trans('Label') . '</td>';
-	print '<td>' . $langs->trans('Description') . '</td>';
-	print '<td>' . $langs->trans('QuestionType') . '</td>';
-  	print '<td class="center">' . $langs->trans('Mandatory') . '</td>';
-	print '<td class="center">' . $langs->trans('PhotoOk') . '</td>';
-	print '<td class="center">' . $langs->trans('PhotoKo') . '</td>';
-	print '<td class="center">' . $langs->trans('Status') . '</td>';
-	print '<td class="center">' . $langs->trans('Action') . '</td>';
-	print '<td class="center"></td>';
-	print '</tr></thead>';
+    print '<thead><tr class="liste_titre">';
+    print '<td class="maxwidth300 widthcentpercentminusx">' . $langs->trans('Ref') . '</td>';
+    print '<td>' . $langs->trans('Label') . '</td>';
+    print '<td>' . $langs->trans('Description') . '</td>';
+    print '<td>' . $langs->trans('QuestionType') . '</td>';
+    print '<td class="center">' . $langs->trans('Mandatory') . '</td>';
+    print '<td class="center">' . $langs->trans('PhotoOk') . '</td>';
+    print '<td class="center">' . $langs->trans('PhotoKo') . '</td>';
+    print '<td class="center">' . $langs->trans('Status') . '</td>';
+    print '<td class="center">' . $langs->trans('Action') . '</td>';
+    print '<td class="center"></td>';
+    print '</tr></thead>';
+    if (is_array($questionsAndGroups) && !empty($questionsAndGroups)) {
+        foreach ($questionsAndGroups as $questionOrGroup) {
+            if ($questionOrGroup->element === 'questiongroup') {
+                $group = $questionOrGroup;
 
-	if (is_array($questionsAndGroups) && !empty($questionsAndGroups)) {
-		foreach ($questionsAndGroups as $questionOrGroup) {
+                $groupQuestions = $group->fetchQuestionsOrderedByPosition();
+                print '<tr id="group-' . $group->id . '" class="line-row oddeven question-group">';
+                print '<td colspan="9">';
+                print '<div class="group-header" onclick="toggleGroup(' . $group->id . ')">';
+                print '<span class="group-title">' . $group->getNomUrl(1) . '</span>';
+                print '<span class="toggle-icon">+</span>';
+                print '</div>';
+                print '</td>';
+                print '</tr>';
 
-			print '<tr id="' . $questionOrGroup->id . '" class="line-row oddeven">';
-			print '<td>';
-			print $questionOrGroup->getNomUrl(1);
-			print '</td>';
+                if (is_array($groupQuestions) && !empty($groupQuestions)) {
+                    print '<tbody id="group-questions-' . $group->id . '" class="hidden">';
+                    foreach ($groupQuestions as $question) {
+                        print '<tr id="question-' . $question->id . '" class="line-row oddeven group-question">';
+                        print '<td style="padding-left: 20px;">';
+                        print $question->getNomUrl(1);
+                        print '</td>';
+                        print '<td>';
+                        print $question->label;
+                        print '</td>';
+                        print '<td>';
+                        print $question->description;
+                        print '</td>';
+                        print '<td>';
+                        print $langs->transnoentities($question->type);
+                        print '</td>';
+                        print '<td class="center">';
+                        print '<input type="checkbox" disabled>';
+                        print '</td>';
+                        print '<td class="center">';
+                        print saturne_show_medias_linked('digiquali', $conf->digiquali->multidir_output[$conf->entity] . '/question/' . $question->ref . '/photo_ok', 1, '', 0, 0, 0, 50, 50, 0, 0, 0, 'question/' . $question->ref . '/photo_ok', $question, 'photo_ok', 0, 0, 1, 1);
+                        print '</td>';
+                        print '<td class="center">';
+                        print saturne_show_medias_linked('digiquali', $conf->digiquali->multidir_output[$conf->entity] . '/question/' . $question->ref . '/photo_ko', 1, '', 0, 0, 0, 50, 50, 0, 0, 0, 'question/' . $question->ref . '/photo_ko', $question, 'photo_ko', 0, 0, 1, 1);
+                        print '</td>';
+                        print '<td class="center">';
+                        print $question->getLibStatut(5);
+                        print '</td>';
+                        print '<td class="center">';
+                        print '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=unlinkQuestion&questionId=' . $question->id . '">';
+                        print img_delete();
+                        print '</a>';
+                        print '</td>';
+                        print '</tr>';
+                    }
+                    print '</tbody>';
+                }
+            } else {
+                $question = $questionOrGroup;
+                print '<tr id="' . $question->id . '" class="line-row oddeven">';
+                print '<td>';
+                print $question->getNomUrl(1);
+                print '</td>';
+                print '<td>';
+                print $question->label;
+                print '</td>';
+                print '<td>';
+                print $question->description;
+                print '</td>';
+                print '<td>';
+                print $langs->transnoentities($question->type);
+                print '</td>';
+                print '<td class="center">';
+                print '<input type="checkbox" disabled>';
+                print '</td>';
+                print '<td class="center">';
+                print saturne_show_medias_linked('digiquali', $conf->digiquali->multidir_output[$conf->entity] . '/question/' . $question->ref . '/photo_ok', 1, '', 0, 0, 0, 50, 50, 0, 0, 0, 'question/' . $question->ref . '/photo_ok', $question, 'photo_ok', 0, 0, 1, 1);
+                print '</td>';
+                print '<td class="center">';
+                print saturne_show_medias_linked('digiquali', $conf->digiquali->multidir_output[$conf->entity] . '/question/' . $question->ref . '/photo_ko', 1, '', 0, 0, 0, 50, 50, 0, 0, 0, 'question/' . $question->ref . '/photo_ko', $question, 'photo_ko', 0, 0, 1, 1);
+                print '</td>';
+                print '<td class="center">';
+                print $question->getLibStatut(5);
+                print '</td>';
+                print '<td class="center">';
+                print '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=unlinkQuestion&questionId=' . $question->id . '">';
+                print img_delete();
+                print '</a>';
+                print '</td>';
+                print '</tr>';
+            }
+        }
+    }
 
-			print '<td>';
-			print $questionOrGroup->label;
-			print '</td>';
 
-			print '<td>';
-			print $questionOrGroup->description;
-			print '</td>';
-
-			print '<td>';
-			print $langs->transnoentities($questionOrGroup->type);
-			print '</td>';
-
-			// Mandatory -- Rendre obligatoire
-			$mandatoryArray = json_decode($object->mandatory_questions, true);
-
-			print '<td class="center">';
-			print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '">';
-			print '<input type="hidden" name="token" value="' . newToken() . '">';
-			print '<input type="hidden" name="action" value="set_mandatory">';
-			print '<input type="hidden" name="questionId" value="' . $questionOrGroup->id . '">';
-			print '<input type="hidden" name="questionRef" value="' . $questionOrGroup->ref . '">';
-			print '<input type="checkbox" onchange="submit();" id="mandatory" name="mandatory" value="' . $questionOrGroup->id . '"' . (in_array($questionOrGroup->id, $mandatoryArray) ? ' checked ' : '') . '" ' . ($object->status < Sheet::STATUS_LOCKED ? '>' : 'disabled>');
-			print '</form>';
-			print '</td>';
-
-			print '<td class="center">';
-			print saturne_show_medias_linked('digiquali',$conf->digiquali->multidir_output[$conf->entity] . '/question/' . $questionOrGroup->ref . '/photo_ok',1,'',0,0,0,50,50,0,0,0,'question/' . $questionOrGroup->ref . '/photo_ok',$questionOrGroup,'photo_ok',0,0,1,1);
-			print '</td>';
-            print '<td class="center">';
-			print saturne_show_medias_linked('digiquali',$conf->digiquali->multidir_output[$conf->entity] . '/question/' . $questionOrGroup->ref . '/photo_ko',1,'',0,0,0,50,50,0,0,0,'question/' . $questionOrGroup->ref . '/photo_ko',$questionOrGroup,'photo_ko',0,0,1,1);
-			print '</td>';
-
-			print '<td class="center">';
-			print $questionOrGroup->getLibStatut(5);
-			print '</td>';
-
-			print '<td class="center">';
-			if ($object->status < $object::STATUS_LOCKED) {
-				print '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=unlinkQuestion&questionId=' . $questionOrGroup->id . '">';
-				print img_delete();
-				print '</a>';
-			}
-			print '</td>';
-
-			if ($object->status < $object::STATUS_LOCKED) {
-				print '<td class="move-line ui-sortable-handle">';
-			} else {
-				print '<td>';
-			}
-			print '</td></tr>';
-		}
-	}
 
     if ($object->status < $object::STATUS_LOCKED) {
         print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '" id="addQuestionForm">';
@@ -775,8 +804,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         print '<tr class="add-line">';
         print '<td class="maxwidth300 widthcentpercentminusx">';
         print '<div id="addChoice">';
-        print '<button type="button" id="addQuestionButton" class="button">' . $langs->trans("AddQuestion") . '</button>';
-        print '<button type="button" id="addGroupButton" class="button">' . $langs->trans("AddGroup") . '</button>';
+        print '<button type="button" id="addQuestionButton" class="butAction">' . img_picto('', $question->picto) . ' ' . $langs->trans("Question") . ' ' . img_picto('', 'fa-plus') . '</button>';
+        print '<button type="button" id="addGroupButton" class="butAction">' . img_picto('', $questionGroup->picto) . ' ' . $langs->trans("QuestionGroup") . ' ' . img_picto('', 'fa-plus') . '</button>';
         print '</div>';
         print '</td>';
         print '<td colspan="9">';
@@ -790,7 +819,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         print '</td>';
         print '<td>';
         print '<input type="hidden" name="action" value="addQuestion">';
-        print '<input type="submit" id="actionButtonAdd" class="button" name="add" value="' . $langs->trans("Add") . '">';
+        print '<input type="submit" id="actionButtonAdd" class="button hideifnotset button-save" name="add" value="' . $langs->trans("Add") . '">';
         print '</td><td colspan="8">';
         print '</td></tr>';
 
@@ -801,7 +830,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         print img_picto('', $questionGroup->picto, 'class="pictofixedwidth"') . $questionGroup->selectQuestionGroupList(0, 'questionGroupId', 's.status = ' . QuestionGroup::STATUS_VALIDATED, '1', 0, 0, array(), '', 0, 0, 'maxwidth300 widthcentpercentminusx', '', false, $questionGroupIds);
         print '</td>';
         print '<td>';
-        print '<input type="submit" id="actionButtonAddQuestionGroup" class="button" name="add" value="' . $langs->trans("Add") . '">';
+        print '<input type="submit" id="actionButtonAddQuestionGroup" class="button hideifnotset button-save" name="add" value="' . $langs->trans("Add") . '">';
         print '</td><td colspan="8">';
         print '</td></tr>';
 

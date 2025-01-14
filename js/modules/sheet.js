@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const addGroupButton = document.getElementById("addGroupButton");
   const addQuestionRow = document.getElementById("addQuestionRow");
   const addGroupRow = document.getElementById("addGroupRow");
+  console.log('coucou')
 
   addQuestionButton.addEventListener("click", function () {
     addQuestionRow.classList.remove("hidden");
@@ -45,3 +46,16 @@ document.addEventListener("DOMContentLoaded", function () {
     addQuestionRow.classList.add("hidden");
   });
 });
+
+function toggleGroup(groupId) {
+  const groupQuestions = document.getElementById(`group-questions-${groupId}`);
+  const toggleIcon = document.querySelector(`#group-${groupId} .toggle-icon`);
+
+  if (groupQuestions.classList.contains('hidden')) {
+    groupQuestions.classList.remove('hidden');
+    toggleIcon.textContent = '-';
+  } else {
+    groupQuestions.classList.add('hidden');
+    toggleIcon.textContent = '+';
+  }
+}
