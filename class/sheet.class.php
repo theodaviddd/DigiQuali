@@ -502,6 +502,47 @@ class Sheet extends SaturneObject
         }
     }
 
+    /**
+     * Update questions position in sheet
+     *
+     * @param array $questionIds Array containing position and ids of questions and group questions in sheet
+     */
+    public function updateQuestionsAndGroupsPosition(array $questionIds)
+    {
+        $this->db->begin();
+
+        $questionIds = array_values($questionIds);
+        for ($position = 0; $position < count($questionIds); $position++) {
+            $sql = 'UPDATE '. MAIN_DB_PREFIX . 'element_element';
+            $sql .= ' SET position = ' . $position;
+            $sql .= ' WHERE fk_source = ' . $this->id;
+            $sql .= ' AND sourcetype = "digiquali_sheet"';
+            $sql .= ' AND fk_target = ' . $questionIds[$position];
+            $sql .= ' AND targettype = "digiquali_question" OR "digiquali_question_group"';
+            $res = $this->db->query($sql);
+
+            if (!$res) {
+                $error++;
+            }
+        }
+        if ($error) {
+            $this->db->rollback();
+        } else {
+            $this->db->commit();
+        }
+    }
+
+
+    public function fetchQuestionsAndGroups() {
+        $object->fetchObjectLinked($id, 'digiquali_' . $object->element, null, '', 'OR', 1, 'position');
+        $questionIds = $object->linkedObjectsIds['digiquali_question'];
+        $groupIds = $object->linkedObjectsIds['digiquali_question_group'];
+
+        $questionIds = array_merge($questionIds, $groupIds);
+
+        return $questionIds;
+
+    }
 	/**
 	 * Write information of trigger description
 	 *

@@ -446,6 +446,7 @@ class QuestionGroup extends SaturneObject
 		// Build output string
 		dol_syslog(get_class($this) . "::selectQuestionList", LOG_DEBUG);
 		$resql = $this->db->query($sql);
+
 		if ($resql) {
 			if ( ! $forcecombo) {
 				include_once DOL_DOCUMENT_ROOT . '/core/lib/ajax.lib.php';
@@ -457,7 +458,11 @@ class QuestionGroup extends SaturneObject
 
 			$num                  = $this->db->num_rows($resql);
 			$i                    = 0;
-
+            if ($showempty)
+            {
+                if ($showempty === '1') $out .= '<option value="0"></option>';
+                else $out .= '<option value="0"></option>';
+            }
 			if ($num) {
 				while ($i < $num) {
 					$obj   = $this->db->fetch_object($resql);
@@ -526,7 +531,7 @@ class QuestionGroup extends SaturneObject
     /**
      * Move questions
      */
-    public function updateQuestionPosition($questionIds)
+    public function updateQuestionGroupPosition($questionIds)
     {
 
         foreach ($questionIds as $position => $questionId) {

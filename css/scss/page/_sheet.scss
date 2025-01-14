@@ -1,0 +1,22 @@
+.hidden {
+  display: none;
+}
+
+#addChoice {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#addChoice .button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+#addChoice .button:hover {
+  background-color: #0056b3;
+}

@@ -28,3 +28,20 @@ window.digiquali.sheet.init = function() {
  */
 window.digiquali.sheet.event = function() {
 };
+
+document.addEventListener("DOMContentLoaded", function () {
+  const addQuestionButton = document.getElementById("addQuestionButton");
+  const addGroupButton = document.getElementById("addGroupButton");
+  const addQuestionRow = document.getElementById("addQuestionRow");
+  const addGroupRow = document.getElementById("addGroupRow");
+
+  addQuestionButton.addEventListener("click", function () {
+    addQuestionRow.classList.remove("hidden");
+    addGroupRow.classList.add("hidden");
+  });
+
+  addGroupButton.addEventListener("click", function () {
+    addGroupRow.classList.remove("hidden");
+    addQuestionRow.classList.add("hidden");
+  });
+});

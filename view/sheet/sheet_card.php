@@ -36,6 +36,7 @@ require_once DOL_DOCUMENT_ROOT . '/categories/class/categorie.class.php';
 
 require_once __DIR__ . '/../../class/sheet.class.php';
 require_once __DIR__ . '/../../class/question.class.php';
+require_once __DIR__ . '/../../class/question_group.class.php';
 require_once __DIR__ . '/../../lib/digiquali_sheet.lib.php';
 
 // Global variables definitions
@@ -57,10 +58,11 @@ $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
 
 // Initialize technical objects
 // Technical objets
-$object      = new Sheet($db);
-$question    = new Question($db);
-$extrafields = new ExtraFields($db);
-$category    = new Categorie($db);
+$object        = new Sheet($db);
+$question      = new Question($db);
+$questionGroup = new QuestionGroup($db);
+$extrafields   = new ExtraFields($db);
+$category      = new Categorie($db);
 
 // View objects
 $form = new Form($db);
@@ -111,6 +113,22 @@ if (empty($reshook)) {
 		}
 	}
 
+    if ($action == 'addQuestionGroup') {
+        $questionGroupId = GETPOST('questionGroupId');
+        if ($questionGroupId > 0) {
+            $questionGroup->fetch($questionGroupId);
+            $questionGroup->add_object_linked('digiquali_' . $object->element, $id);
+
+            $object->fetchObjectLinked($id, 'digiquali_' . $object->element, null, '', 'OR', 1, 'position', 0);
+            $questionGroupIds = $object->linkedObjectsIds['digiquali_question_group'];
+            $questionGroupIds[] = $questionGroup->id;
+            $object->updateQuestionsAndGroupsPosition($questionGroupIds);
+
+            $object->call_trigger('SHEET_ADDQUESTIONGROUP', $user);
+            setEventMessages($langs->trans('AddQuestionGroupLink', 1) . ' ' . $questionGroup->ref, []);
+        }
+    }
+
 	if ($action == 'addQuestion' && $permissiontoadd) {
 		$questionId = GETPOST('questionId');
 		if ($questionId > 0) {
@@ -120,7 +138,7 @@ if (empty($reshook)) {
 			$object->fetchObjectLinked($id, 'digiquali_' . $object->element, null, '', 'OR', 1, 'position', 0);
             $questionIds   = $object->linkedObjectsIds['digiquali_question'];
             $questionIds[] = $question->id;
-			$object->updateQuestionsPosition($questionIds);
+			$object->updateQuestionsAndGroupsPosition($questionIds);
 
 			$object->call_trigger('SHEET_ADDQUESTION', $user);
 			setEventMessages($langs->trans('AddQuestionLink', 1) . ' ' . $question->ref, []);
@@ -612,8 +630,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	print '<div class="clearboth"></div>';
 
-	$object->fetchObjectLinked($id, 'digiquali_' . $object->element, null, '', 'OR', 1, 'position');
-	$questionIds = $object->linkedObjectsIds['digiquali_question'];
+    $questionsAndGroups = $object->fetchQuestionsAndGroups();
+
 
 	// Buttons for actions
 	if ($action != 'presend' && $action != 'editline') {
@@ -688,26 +706,24 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	print '<td class="center"></td>';
 	print '</tr></thead>';
 
-	if (is_array($questionIds) && !empty($questionIds)) {
-		foreach ($questionIds as $questionId) {
-			$item = $question;
-			$item->fetch($questionId);
+	if (is_array($questionsAndGroups) && !empty($questionsAndGroups)) {
+		foreach ($questionsAndGroups as $questionOrGroup) {
 
-			print '<tr id="' . $item->id . '" class="line-row oddeven">';
+			print '<tr id="' . $questionOrGroup->id . '" class="line-row oddeven">';
 			print '<td>';
-			print $item->getNomUrl(1);
+			print $questionOrGroup->getNomUrl(1);
 			print '</td>';
 
 			print '<td>';
-			print $item->label;
+			print $questionOrGroup->label;
 			print '</td>';
 
 			print '<td>';
-			print $item->description;
+			print $questionOrGroup->description;
 			print '</td>';
 
 			print '<td>';
-			print $langs->transnoentities($item->type);
+			print $langs->transnoentities($questionOrGroup->type);
 			print '</td>';
 
 			// Mandatory -- Rendre obligatoire
@@ -751,21 +767,46 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		}
 	}
 
-	if ($object->status < $object::STATUS_LOCKED) {
-		print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
-		print '<input type="hidden" name="token" value="' . newToken() . '">';
-		print '<input type="hidden" name="action" value="addQuestion">';
-		print '<input type="hidden" name="id" value="' . $id . '">';
+    if ($object->status < $object::STATUS_LOCKED) {
+        print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '" id="addQuestionForm">';
+        print '<input type="hidden" name="token" value="' . newToken() . '">';
+        print '<input type="hidden" name="id" value="' . $id . '">';
 
-		print '<tr class="add-line"><td class="maxwidth300 widthcentpercentminusx">';
-		print img_picto('', $question->picto, 'class="pictofixedwidth"') . $question->selectQuestionList(0, 'questionId', 's.status = ' . Question::STATUS_LOCKED, '1', 0, 0, array(), '', 0, 0, 'disabled maxwidth300 widthcentpercentminusx', '', false, $questionIds);
-		print '</td>';
-		print '<td>';
-		print '<input type="submit" id="actionButtonAdd" class="button wpeo-button" name="add" value="' . $langs->trans("Add") . '">';
+        print '<tr class="add-line">';
+        print '<td class="maxwidth300 widthcentpercentminusx">';
+        print '<div id="addChoice">';
+        print '<button type="button" id="addQuestionButton" class="button">' . $langs->trans("AddQuestion") . '</button>';
+        print '<button type="button" id="addGroupButton" class="button">' . $langs->trans("AddGroup") . '</button>';
+        print '</div>';
+        print '</td>';
+        print '<td colspan="9">';
+        print '</td>';
+        print '</tr>';
+
+        // Section for adding a question
+        print '<tr id="addQuestionRow" class="hidden">';
+        print '<td class="maxwidth300 widthcentpercentminusx">';
+        print img_picto('', $question->picto, 'class="pictofixedwidth"') . $question->selectQuestionList(0, 'questionId', 's.status = ' . Question::STATUS_LOCKED, '1', 0, 0, array(), '', 0, 0, 'maxwidth300 widthcentpercentminusx', '', false, $questionIds);
+        print '</td>';
+        print '<td>';
+        print '<input type="hidden" name="action" value="addQuestion">';
+        print '<input type="submit" id="actionButtonAdd" class="button" name="add" value="' . $langs->trans("Add") . '">';
         print '</td><td colspan="8">';
-		print '</td></tr>';
-		print '</form>';
-	}
+        print '</td></tr>';
+
+        // Section for adding a group
+        print '<tr id="addGroupRow" class="hidden">';
+        print '<td class="maxwidth300 widthcentpercentminusx">';
+        print '<input type="hidden" name="action" value="addQuestionGroup">';
+        print img_picto('', $questionGroup->picto, 'class="pictofixedwidth"') . $questionGroup->selectQuestionGroupList(0, 'questionGroupId', 's.status = ' . QuestionGroup::STATUS_VALIDATED, '1', 0, 0, array(), '', 0, 0, 'maxwidth300 widthcentpercentminusx', '', false, $questionGroupIds);
+        print '</td>';
+        print '<td>';
+        print '<input type="submit" id="actionButtonAddQuestionGroup" class="button" name="add" value="' . $langs->trans("Add") . '">';
+        print '</td><td colspan="8">';
+        print '</td></tr>';
+
+        print '</form>';
+    }
 
 	print '</table>';
 	print '</div>';
