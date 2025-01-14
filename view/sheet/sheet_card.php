@@ -707,6 +707,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     print '</tr></thead>';
     if (is_array($questionsAndGroups) && !empty($questionsAndGroups)) {
         foreach ($questionsAndGroups as $questionOrGroup) {
+            $questionsAndGroupsIdsArray[$questionOrGroup->element][] = $questionOrGroup->id;
+
             if ($questionOrGroup->element === 'questiongroup') {
                 $group = $questionOrGroup;
 
@@ -795,7 +797,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     }
 
 
-
     if ($object->status < $object::STATUS_LOCKED) {
         print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '" id="addQuestionForm">';
         print '<input type="hidden" name="token" value="' . newToken() . '">';
@@ -814,8 +815,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
         // Section for adding a question
         print '<tr id="addQuestionRow" class="hidden">';
-        print '<td class="maxwidth300 widthcentpercentminusx">';
-        print img_picto('', $question->picto, 'class="pictofixedwidth"') . $question->selectQuestionList(0, 'questionId', 's.status = ' . Question::STATUS_LOCKED, '1', 0, 0, array(), '', 0, 0, 'maxwidth300 widthcentpercentminusx', '', false, $questionIds);
+        print '<td class=" widthcentpercentminusx">';
+        print img_picto('', $question->picto, 'class="pictofixedwidth"') . $question->selectQuestionList(0, 'questionId', 's.status = ' . Question::STATUS_LOCKED, '1', 0, 0, array(), '', 0, 0, 'maxwidth600 minwidth400 widthcentpercentminusx', '', false, $questionsAndGroupsIdsArray['question']);
         print '</td>';
         print '<td>';
         print '<input type="hidden" name="action" value="addQuestion">';
@@ -825,9 +826,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
         // Section for adding a group
         print '<tr id="addGroupRow" class="hidden">';
-        print '<td class="maxwidth300 widthcentpercentminusx">';
+        print '<td class=" widthcentpercentminusx">';
         print '<input type="hidden" name="action" value="addQuestionGroup">';
-        print img_picto('', $questionGroup->picto, 'class="pictofixedwidth"') . $questionGroup->selectQuestionGroupList(0, 'questionGroupId', 's.status = ' . QuestionGroup::STATUS_VALIDATED, '1', 0, 0, array(), '', 0, 0, 'maxwidth300 widthcentpercentminusx', '', false, $questionGroupIds);
+        print img_picto('', $questionGroup->picto, 'class="pictofixedwidth"') . $questionGroup->selectQuestionGroupList(0, 'questionGroupId', 's.status = ' . QuestionGroup::STATUS_VALIDATED, '1', 0, 0, array(), '', 0, 0, 'maxwidth600 minwidth400 widthcentpercentminusx', '', false, $questionsAndGroupsIdsArray['questiongroup']);
         print '</td>';
         print '<td>';
         print '<input type="submit" id="actionButtonAddQuestionGroup" class="button hideifnotset button-save" name="add" value="' . $langs->trans("Add") . '">';

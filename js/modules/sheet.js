@@ -34,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const addGroupButton = document.getElementById("addGroupButton");
   const addQuestionRow = document.getElementById("addQuestionRow");
   const addGroupRow = document.getElementById("addGroupRow");
-  console.log('coucou')
 
   addQuestionButton.addEventListener("click", function () {
     addQuestionRow.classList.remove("hidden");

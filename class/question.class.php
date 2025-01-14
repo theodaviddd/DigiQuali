@@ -531,7 +531,7 @@ class Question extends SaturneObject
 
             if ($showempty)
             {
-                if ($showempty === '1') $out .= '<option value="0"></option>';
+                if ($showempty === '1') $out .= '<option value="0" selected>'. dol_escape_htmltag('&nbsp;') . '</option>';
                 else $out .= '<option value="0"></option>';
             }
 			if ($num) {
