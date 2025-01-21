@@ -47,24 +47,23 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function toggleGroup(groupId) {
-  const groupQuestions = document.getElementById(`group-questions-${groupId}`);
+  const groupQuestions = $(`.group-question-${groupId}`);
   const toggleIcon = document.querySelector(`#group-${groupId} .toggle-icon`);
 
-  if (groupQuestions.classList.contains('hidden')) {
-    groupQuestions.classList.remove('hidden');
-    toggleIcon.textContent = '-';
-  } else {
-    groupQuestions.classList.add('hidden');
-    toggleIcon.textContent = '+';
-  }
+
+  groupQuestions.each(function () {
+    const question = $(this);
+    question.toggleClass('hidden');
+    const isHidden = question.hasClass('hidden');
+    toggleIcon.textContent = isHidden ? '+' : '-';
+  });
 }
 
 window.digiquali.sheet.closeAllGroups = function () {
-  console.log('coucou')
   const groupQuestions = document.querySelectorAll('.group-question');
 
-  groupQuestions.forEach(group => {
-    group.closest('tbody').classList.add('hidden');
+  groupQuestions.forEach(question => {
+    question.classList.add('hidden');
   });
 
   const toggleIcons = document.querySelectorAll('.toggle-icon');
