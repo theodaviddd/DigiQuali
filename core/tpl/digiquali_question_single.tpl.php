@@ -22,12 +22,12 @@
  */
 
 if (!$user->conf->DIGIQUALI_SHOW_ONLY_QUESTIONS_WITH_NO_ANSWER or empty($questionAnswer)) {
-
     ?>
     <div class="wpeo-table table-flex table-3 table-id-<?php echo $question->id ?>" data-publicInterface="<?php echo $publicInterface; ?>" data-autoSave="<?php echo getDolGlobalInt('DIGIQUALI_' . dol_strtoupper($object->element) . 'DET_AUTO_SAVE_ACTION'); ?>">
         <div class="table-row">
             <!-- Contenu et commentaire -->
             <div class="table-cell table-full">
+                <input hidden name="questionGroupId<?php echo $question->id; ?>" value="<?php echo $questionGroupId; ?>" />
                 <div class="label"><strong><?php print $question->getNomUrl(1, isset($publicInterface) ? 'nolink' : '', 1, '', -1, 1); ?></strong></div>
                 <div class="description"><?php print $question->description; ?></div>
                 <div class="question-comment-container">
@@ -117,7 +117,8 @@ if (!$user->conf->DIGIQUALI_SHOW_ONLY_QUESTIONS_WITH_NO_ANSWER or empty($questio
                     ?>
                 </div>
             <?php elseif ($question->type == 'UniqueChoice' || $question->type == 'OkKo' || $question->type == 'OkKoToFixNonApplicable') :
-                $answerList = $answer->fetchAll('ASC', 'position', 0, 0, ['customsql' => 't.status > ' . Answer::STATUS_DELETED . ' AND t.fk_question = ' . $question->id]); ?>
+                $answerList = $answer->fetchAll('ASC', 'position', 0, 0, ['customsql' => 't.status > ' . Answer::STATUS_DELETED . ' AND t.fk_question = ' . $question->id]);
+            ?>
                 <div class="table-cell table-end select-answer answer-cell table-300" <?php echo ($object->status > 0) ? 'style="pointer-events: none"' : '' ?> data-questionId="<?php echo $question->id; ?>">
                     <?php
                     print '<input type="hidden" class="question-answer" name="answer' . $question->id . '" id="answer' . $question->id . '" value="0">';

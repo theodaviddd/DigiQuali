@@ -127,3 +127,6 @@ ALTER TABLE `llx_digiquali_survey` ADD `success_rate` DOUBLE(24,8) NULL AFTER `p
 
 -- 1.13.0
 ALTER TABLE `llx_digiquali_control` ADD `label` VARCHAR(255) NULL AFTER `status`;
+
+-- 1.15.0
+ALTER TABLE `llx_digiquali_controldet` ADD `fk_question_group` integer AFTER `fk_question`;

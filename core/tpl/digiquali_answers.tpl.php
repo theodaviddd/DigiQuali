@@ -32,32 +32,37 @@ if (is_array($questionsAndGroups) && !empty($questionsAndGroups)) {
     foreach ($questionsAndGroups as $questionOrGroup) {
         $questionAnswer = '';
         $comment        = '';
-        $result         = $objectLine->fetchFromParentWithQuestion($object->id, $questionOrGroup->id);
-        if (is_array($result) && !empty($result)) {
-            $objectLine = array_shift($result);
-            $questionAnswer = $objectLine->answer;
-            $comment = $objectLine->comment;
-        }
 
+        $questionGroupId = 0;
         if ($questionOrGroup->element == 'questiongroup') {
-            $questionGroup->fetch($questionOrGroup->id);
-            $groupQuestions = $questionGroup->fetchQuestionsOrderedByPosition();
+            $questionGroupId = $questionOrGroup->id;
 
+            $questionGroup->fetch($questionGroupId);
+            $groupQuestions = $questionGroup->fetchQuestionsOrderedByPosition();
             print '<div class="digiquali-question-group">';
-            print '<div class="group-header">';
             print '<h3>' . img_picto('', $questionGroup->picto) . ' ' . htmlspecialchars($questionGroup->label) . '</h3>';
             print '<p class="group-description">' . nl2br(htmlspecialchars($questionGroup->description)) . '</p>';
             print '</div>';
 
             if (is_array($groupQuestions) && !empty($groupQuestions)) {
                 foreach ($groupQuestions as $question) {
-                    print '<div class="group-question">';
+                    $result         = $objectLine->fetchFromParentWithQuestion($object->id, $question->id, $questionGroupId);
+                    if (is_array($result) && !empty($result)) {
+                        $objectLine = array_shift($result);
+                        $questionAnswer = $objectLine->answer;
+                        $comment = $objectLine->comment;
+                    }
                     include __DIR__ . '/digiquali_question_single.tpl.php';
-                    print '</div>';
+
                 }
             }
-            print '</div>';
         } else {
+            $result         = $objectLine->fetchFromParentWithQuestion($object->id, $questionOrGroup->id);
+            if (is_array($result) && !empty($result)) {
+                $objectLine = array_shift($result);
+                $questionAnswer = $objectLine->answer;
+                $comment = $objectLine->comment;
+            }
             $question = $questionOrGroup;
             include __DIR__ . '/digiquali_question_single.tpl.php';
         }

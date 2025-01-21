@@ -30,11 +30,27 @@
 
 if ($action == 'save') {
     $data = json_decode(file_get_contents('php://input'), true);
-
     $sheet->fetch($object->fk_sheet);
-    $sheet->fetchObjectLinked($object->fk_sheet, 'digiquali_' . $sheet->element);
-    if (!empty($sheet->linkedObjects['digiquali_question'])) {
-        foreach ($sheet->linkedObjects['digiquali_question'] as $question) {
+    $questionAndGroups = $sheet->fetchQuestionsAndGroups();
+
+    $questions = [];
+    if (is_array($questionAndGroups) && !empty($questionAndGroups)) {
+        foreach($questionAndGroups as $questionOrGroup) {
+            if ($questionOrGroup->element == 'questiongroup') {
+                $groupQuestions = $questionOrGroup->fetchQuestionsOrderedByPosition();
+                if (is_array($groupQuestions) && !empty($groupQuestions)) {
+                    foreach($groupQuestions as $groupQuestion) {
+                        $questions[] = $groupQuestion;
+                    }
+                }
+            } else {
+                $questions[] = $questionOrGroup;
+            }
+        }
+    }
+    if (!empty($questions)) {
+        foreach ($questions as $question) {
+
             if (!empty($object->lines)) {
                 foreach ($object->lines as $line) {
                     if ($line->fk_question === $question->id) {
@@ -90,6 +106,15 @@ if ($action == 'save') {
                 } else {
                     $objectLine->comment = '';
                 }
+
+                // Save answer in groups
+                if ($data['autoSave'] && $question->id == $data['questionId']) {
+                    $questionGroupId = $data['questionGroupId'];
+                } else {
+                    $questionGroupId = GETPOST('questionGroupId' . $question->id);
+                }
+                $objectLine->fk_question_group = $questionGroupId;
+
 
                 $objectLine->entity = $conf->entity;
                 $objectLine->status = 1;
