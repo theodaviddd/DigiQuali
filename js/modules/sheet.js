@@ -58,3 +58,18 @@ function toggleGroup(groupId) {
     toggleIcon.textContent = '+';
   }
 }
+
+window.digiquali.sheet.closeAllGroups = function () {
+  console.log('coucou')
+  const groupQuestions = document.querySelectorAll('.group-question');
+
+  groupQuestions.forEach(group => {
+    group.closest('tbody').classList.add('hidden');
+  });
+
+  const toggleIcons = document.querySelectorAll('.toggle-icon');
+
+  toggleIcons.forEach(icon => {
+    icon.textContent = '+';
+  });
+}

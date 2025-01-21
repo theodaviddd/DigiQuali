@@ -507,53 +507,98 @@ class Sheet extends SaturneObject
      *
      * @param array $questionIds Array containing position and ids of questions and group questions in sheet
      */
-    public function updateQuestionsAndGroupsPosition(array $questionIds, array $questionGroupIds)
+    public function updateQuestionsAndGroupsPosition(array $questionIds, array $questionGroupIds, $reindexLast = false)
     {
         $this->db->begin();
 
-        $questionIds = array_values($questionIds);
-        $questionGroupIds = array_values($questionGroupIds);
-        $questionAndGroupIds = array_merge($questionIds, $questionGroupIds);
-
-        for ($position = 0; $position < count($questionAndGroupIds); $position++) {
-            $sql = 'UPDATE '. MAIN_DB_PREFIX . 'element_element';
-            $sql .= ' SET position = ' . $position;
+        if ($reindexLast) {
+            $sql = 'UPDATE ' . MAIN_DB_PREFIX . 'element_element';
+            $sql .= ' SET position = ( SELECT MAX(position) + 1 FROM llx_element_element WHERE fk_source = 11 AND sourcetype = "digiquali_sheet" )';
             $sql .= ' WHERE fk_source = ' . $this->id;
             $sql .= ' AND sourcetype = "digiquali_sheet"';
-            $sql .= ' AND fk_target = ' . $questionAndGroupIds[$position];
-            $sql .= ' AND targettype = "digiquali_question" OR "digiquali_questiongroup"';
+            $sql .= ' AND (targettype = "digiquali_question" OR targettype = "digiquali_questiongroup")';
+            $sql .= ' AND position IS NULL';
+
             $res = $this->db->query($sql);
 
             if (!$res) {
                 $error++;
             }
         }
+
+        if (!empty($questionIds)) {
+            foreach($questionIds as $position => $questionId) {
+                $sql = 'UPDATE ' . MAIN_DB_PREFIX . 'element_element';
+                $sql .= ' SET position = ' . $position;
+                $sql .= ' WHERE fk_source = ' . $this->id;
+                $sql .= ' AND sourcetype = "digiquali_sheet"';
+                $sql .= ' AND fk_target = ' . $questionId;
+                $sql .= ' AND targettype = "digiquali_question"';
+
+                $res = $this->db->query($sql);
+
+                if (!$res) {
+                    $error++;
+                }
+            }
+        }
+
+        if (!empty($questionGroupIds)) {
+            foreach($questionGroupIds as $position => $questionGroupId) {
+                $sql = 'UPDATE ' . MAIN_DB_PREFIX . 'element_element';
+                $sql .= ' SET position = ' . $position;
+                $sql .= ' WHERE fk_source = ' . $this->id;
+                $sql .= ' AND sourcetype = "digiquali_sheet"';
+                $sql .= ' AND fk_target = ' . $questionGroupId;
+                $sql .= ' AND targettype = "digiquali_questiongroup"';
+
+                $res = $this->db->query($sql);
+
+                if (!$res) {
+                    $error++;
+                }
+            }
+        }
+
         if ($error) {
             $this->db->rollback();
+            return -1;
         } else {
             $this->db->commit();
+            return 1;
         }
+
     }
 
 
     public function fetchQuestionsAndGroups() {
-        $this->fetchObjectLinked($id, 'digiquali_' . $this->element, null, '', 'OR', 1, 'position');
-        $questionIds = $this->linkedObjects['digiquali_question'];
-        $groupIds = $this->linkedObjects['digiquali_questiongroup'];
 
-        // if only groups are filled, return groups, else return questions if they are filled else return array merge
 
-        if (empty($questionIds) && !empty($groupIds)) {
-            return $groupIds;
-        } elseif (!empty($questionIds) && empty($groupIds)) {
-            return $questionIds;
-        } else if (empty($questionIds) && empty($groupIds)) {
-            return [];
+        $sql = 'SELECT ee.fk_target, ee.targettype, ee.position';
+        $sql .= ' FROM ' . MAIN_DB_PREFIX . 'element_element as ee';
+        $sql .= ' WHERE ee.fk_source = ' . $this->id;
+        $sql .= ' AND ee.sourcetype = "digiquali_sheet"';
+        $sql .= ' AND (ee.targettype = "digiquali_question" OR ee.targettype = "digiquali_questiongroup")';
+        $sql .= ' ORDER BY ee.position ASC';
+
+        $res = $this->db->query($sql);
+        $questionAndGroupIds = [];
+        if ($res) {
+            while ($obj = $this->db->fetch_object($res)) {
+                $question = new Question($this->db);
+                $questionGroup = new QuestionGroup($this->db);
+
+                //turn objects into real objects
+                if ($obj->targettype == 'digiquali_question') {
+                    $question->fetch($obj->fk_target);
+                    $questionAndGroupIds[] = $question;
+                } else {
+                    $questionGroup->fetch($obj->fk_target);
+                    $questionAndGroupIds[] = $questionGroup;
+                }
+            }
         }
-
-        $questionIds = array_merge($questionIds, $groupIds);
-
-        return $questionIds;
+        return $questionAndGroupIds;
 
     }
 	/**

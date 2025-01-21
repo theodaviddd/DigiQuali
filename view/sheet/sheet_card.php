@@ -119,15 +119,12 @@ if (empty($reshook)) {
             $questionGroup->fetch($questionGroupId);
             $questionGroup->add_object_linked('digiquali_' . $object->element, $id);
 
-            $object->fetchObjectLinked($id, 'digiquali_' . $object->element, null, '', 'OR', 1, 'position', 0);
-            $questionIds   = $object->linkedObjectsIds['digiquali_question'];
-            $questionIds[] = $question->id;
-            $questionGroupIds = $object->linkedObjectsIds['digiquali_question_group'];
-            $questionGroupIds[] = $questionGroup->id;
-            $object->updateQuestionsAndGroupsPosition($questionIds, $questionGroupIds);
+            $object->updateQuestionsAndGroupsPosition([], [], true);
 
             $object->call_trigger('SHEET_ADDQUESTIONGROUP', $user);
             setEventMessages($langs->trans('AddQuestionGroupLink', 1) . ' ' . $questionGroup->ref, []);
+            header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . GETPOST('id'));
+            exit;
         }
     }
 
@@ -138,14 +135,9 @@ if (empty($reshook)) {
 
 			$question->add_object_linked('digiquali_' . $object->element,$id);
 
-			$object->fetchObjectLinked($id, 'digiquali_' . $object->element, null, '', 'OR', 1, 'position', 0);
-            $questionIds   = $object->linkedObjectsIds['digiquali_question'];
-            $questionIds[] = $question->id;
-            $questionGroupIds = $object->linkedObjectsIds['digiquali_question_group'];
-            $questionGroupIds[] = $questionGroup->id;
-			$object->updateQuestionsAndGroupsPosition($questionIds, $questionGroupIds);
+            $object->updateQuestionsAndGroupsPosition([], [], true);
 
-			$object->call_trigger('SHEET_ADDQUESTION', $user);
+            $object->call_trigger('SHEET_ADDQUESTION', $user);
 			setEventMessages($langs->trans('AddQuestionLink', 1) . ' ' . $question->ref, []);
 			header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . GETPOST('id'));
 			exit;
@@ -207,8 +199,20 @@ if (empty($reshook)) {
 
 	if ($action == 'moveLine' && $permissiontoadd) {
 		$idsArray = json_decode(file_get_contents('php://input'), true);
+
+        $questionIds = [];
+        $questionGroupIds = [];
+
 		if (is_array($idsArray['order']) && !empty($idsArray['order'])) {
-		    $object->updateQuestionsPosition($idsArray['order']);
+            foreach($idsArray['order'] as $position => $id) {
+                if (strstr($id, 'group-')) {
+                    $questionGroupIds[$position] = substr($id, 6);
+                } else {
+                    $questionIds[$position] = $id;
+                }
+            }
+
+		    $object->updateQuestionsAndGroupsPosition($questionIds, $questionGroupIds);
 		}
 	}
 
@@ -637,7 +641,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
     $questionsAndGroups = $object->fetchQuestionsAndGroups();
 
-
 	// Buttons for actions
 	if ($action != 'presend' && $action != 'editline') {
 		print '<div class="tabsAction">';
@@ -725,12 +728,17 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
                 print '<span class="toggle-icon">+</span>';
                 print '</div>';
                 print '</td>';
+                if ($object->status < $object::STATUS_LOCKED) {
+                    print '<td class="move-line ui-sortable-handle" onmousedown="window.digiquali.sheet.closeAllGroups()">';
+                } else {
+                    print '<td>';
+                }
                 print '</tr>';
 
                 if (is_array($groupQuestions) && !empty($groupQuestions)) {
                     print '<tbody id="group-questions-' . $group->id . '" class="hidden">';
                     foreach ($groupQuestions as $question) {
-                        print '<tr id="question-' . $question->id . '" class="line-row oddeven group-question">';
+                        print '<tr id="question-' . $question->id . '" class="oddeven group-question">';
                         print '<td style="padding-left: 20px;">';
                         print $question->getNomUrl(1);
                         print '</td>';
@@ -796,6 +804,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
                 print img_delete();
                 print '</a>';
                 print '</td>';
+                if ($object->status < $object::STATUS_LOCKED) {
+                    print '<td class="move-line ui-sortable-handle" onmousedown="window.digiquali.sheet.closeAllGroups()">';
+                } else {
+                    print '<td>';
+                }
                 print '</tr>';
             }
         }
