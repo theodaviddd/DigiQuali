@@ -157,12 +157,32 @@ class InterfaceDigiQualiTriggers extends DolibarrTriggers
                 }
 
                 $sheet->fetchObjectLinked($object->fk_sheet, 'digiquali_' . $sheet->element);
-                if (!empty($sheet->linkedObjects['digiquali_question'])) {
-                    foreach ($sheet->linkedObjects['digiquali_question'] as $question) {
+                    $questionAndGroups = $sheet->fetchQuestionsAndGroups();
+
+                    $questions = [];
+                    if (is_array($questionAndGroups) && !empty($questionAndGroups)) {
+                        foreach($questionAndGroups as $questionOrGroup) {
+                            if ($questionOrGroup->element == 'questiongroup') {
+                                $groupQuestions = $questionOrGroup->fetchQuestionsOrderedByPosition();
+                                if (is_array($groupQuestions) && !empty($groupQuestions)) {
+                                    foreach($groupQuestions as $groupQuestion) {
+                                        $groupQuestion->fk_question_group = $questionOrGroup->id;
+                                        $questions[] = $groupQuestion;
+                                    }
+                                }
+                            } else {
+                                $questionOrGroup->fk_question_group = 0;
+                                $questions[] = $questionOrGroup;
+                            }
+                        }
+                    }
+                    if (!empty($questions)) {
+                        foreach ($questions as $question) {
                         $objectLine->ref         = $objectLine->getNextNumRef();
                         $fk_element              = 'fk_'. $object->element;
                         $objectLine->$fk_element = $object->id;
                         $objectLine->fk_question = $question->id;
+                        $objectLine->fk_question_group = $question->fk_question_group;
                         $objectLine->answer      = '';
                         $objectLine->comment     = '';
                         $objectLine->entity      = $conf->entity;

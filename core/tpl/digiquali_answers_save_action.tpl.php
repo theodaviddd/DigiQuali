@@ -52,10 +52,10 @@ if ($action == 'save') {
     }
     if (!empty($questions)) {
         foreach ($questions as $question) {
-
             if (!empty($object->lines)) {
                 foreach ($object->lines as $line) {
                     if ($line->fk_question === $question->id && $line->fk_question_group === $question->fk_question_group) {
+
 
                         // Save answer value
                         if ($data['autoSave'] && $question->id == $data['questionId']) {
@@ -82,39 +82,6 @@ if ($action == 'save') {
                         $line->update($user);
                     }
                 }
-            } else {
-                $objectLine->ref         = $objectLine->getNextNumRef();
-                $fk_element              = 'fk_'. $object->element;
-                $objectLine->$fk_element = $object->id;
-                $objectLine->fk_question = $question->id;
-                $objectLine->fk_question_group = $question->fk_question_group;
-
-                // Save answer value
-                if ($data['autoSave'] && $question->id == $data['questionId']) {
-                    $questionAnswer = $data['answer'];
-                } else {
-                    $questionAnswer = GETPOST('answer' . $question->id . '_' . $question->fk_question_group);
-                }
-                if (!empty($questionAnswer)) {
-                    $objectLine->answer = $questionAnswer;
-                } else {
-                    $objectLine->answer = '';
-                }
-
-                // Save answer comment
-                if ($data['autoSave'] && $question->id == $data['questionId']) {
-                    $comment = $data['comment'];
-                } else {
-                    $comment = GETPOST('comment' . $question->id . '_' . $question->fk_question_group);
-                }
-                if (dol_strlen($comment) > 0) {
-                    $objectLine->comment = $comment;
-                } else {
-                    $objectLine->comment = '';
-                }
-                $objectLine->entity = $conf->entity;
-                $objectLine->status = 1;
-                $objectLine->create($user);
             }
         }
     }
