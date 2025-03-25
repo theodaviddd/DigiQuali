@@ -348,15 +348,27 @@ if (empty($reshook)) {
  * View
  */
 
-$title    = $langs->trans('Sheet');
-$help_url = 'FR:Module_DigiQuali';
-$moreJS   = ['/saturne/js/includes/hammer.min.js'];
+$title = $langs->trans('Sheet') . ' - ' . $langs->trans('Card');
+$help_url = 'FR:Module_Digiquali#Fiche_modèle';
+
+saturne_header(0, '', $title, $help_url);
+
+$linkback = '<a href="' . DOL_URL_ROOT . '/custom/digiquali/view/sheet/sheet_list.php' . (!empty($socid) ? '?socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+
+$morehtmlref = '<div class="refidno">';
+$morehtmlref .= $object->ref;
+$morehtmlref .= '</div>';
+
+$head = sheet_prepare_head($object);
+
+dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '', 1, '');
+
+print '<div class="fiche">';
+print '<div class="underbanner clearboth"></div>';
+print '<table class="border centpercent tableforfield">';
 
 $elementArray = get_sheet_linkable_objects();
 
-saturne_header(1,'', $title, $help_url, '', 0, 0, $moreJS);
-print $object->getQuestionAndGroupsTree();
-print '<div id="cardContent" class="margin-for-tree">';
 // Part to create
 if ($action == 'create') {
 	print load_fiche_titre($langs->trans('NewSheet'), '', 'object_' . $object->picto);
