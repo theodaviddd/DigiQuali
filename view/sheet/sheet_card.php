@@ -714,9 +714,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     print '<table id="tablelines" class="centpercent noborder noshadow">'; ?>
     <script>
         $(document).ready(function(){
-            $(".move-line").css("background-image",'url(<?php echo DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/grip.png'; ?>)');
-            $(".move-line").css("background-repeat","no-repeat");
-            $(".move-line").css("background-position","center center");
+            $(".sheet-move-line").css("background-image",'url(<?php echo DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/grip.png'; ?>)');
+            $(".sheet-move-line").css("background-repeat","no-repeat");
+            $(".sheet-move-line").css("background-position","center center");
         });
     </script>
     <?php
@@ -757,7 +757,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
                     print img_delete();
                     print '</a>';
                     print '</td>';
-                    print '<td class="move-line ui-sortable-handle" onmousedown="window.digiquali.sheet.closeAllGroups()">';
+                    print '<td class="sheet-move-line ui-sortable-handle" onmousedown="window.digiquali.sheet.closeAllGroups()">';
                     print '</td>';
                 } else {
                     print '<td>';
@@ -817,7 +817,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
                 print '</a>';
                 print '</td>';
                 if ($object->status < $object::STATUS_LOCKED) {
-                    print '<td class="move-line ui-sortable-handle" onmousedown="window.digiquali.sheet.closeAllGroups()">';
+                    print '<td class="sheet-move-line ui-sortable-handle" onmousedown="window.digiquali.sheet.closeAllGroups()">';
                 } else {
                     print '<td>';
                 }

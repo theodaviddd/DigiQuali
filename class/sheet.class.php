@@ -733,7 +733,7 @@ class Sheet extends SaturneObject
                     $groupHasQuestions = !empty($questionsInGroup);
 
                     $out .= '  <li class="group-item '. ($typeSelected == 'questiongroup' && $idSelected == $questionOrGroup->id ? 'selected' : '') .'" data-id="'. $questionOrGroup->id .'">';
-                    $out .= '    <span class="icon fas '. ($groupHasQuestions ? 'fa-chevron-down' : '') . ' fa-fw toggle-group-in-tree" style="margin-right: 10px;"></span>';
+                    $out .= '    <span class="icon fas '. ($groupHasQuestions ? 'fa-chevron-up' : '') . ' fa-fw toggle-group-in-tree" style="margin-right: 10px;"></span>';
                     $out .= '    <span class="icon fas fa-folder fa-2x"></span>';
                     $out .= '    <a href="'. $questionGroupCardUrl . '?id=' . $questionOrGroup->id . '&sheet_id='. $this->id .'" class="group-item-link">';
                     $out .= '      <div class="title-container">';
@@ -747,7 +747,7 @@ class Sheet extends SaturneObject
                     $out .= '  </li>';
 
                     if ($groupHasQuestions) {
-                        $out .= '  <ul class="sub-questions">';
+                        $out .= '  <ul class="sub-questions collapsed">';
                         foreach ($questionsInGroup as $q) {
                             $out .= '    <li class="question-item '. ($typeSelected == 'question' && $idSelected == $q->id && $parentGroupId == $questionOrGroup->id ? 'selected' : '') .'" data-id="'. $q->id .'" data-group-id="'. $q->fk_question_group.'">';
                             $out .= '      <span class="icon fas fa-question fa-2x"></span>';
