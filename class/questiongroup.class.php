@@ -542,23 +542,12 @@ class QuestionGroup extends SaturneObject
      */
     public function fetchQuestionsOrderedByPosition()
     {
-        $questions = [];
-        $sql = 'SELECT fk_source';
-        $sql .= ' FROM ' . MAIN_DB_PREFIX . 'element_element';
-        $sql .= ' WHERE fk_target = ' . $this->id;
-        $sql .= ' AND targettype = \'digiquali_questiongroup\'';
-        $sql .= ' AND sourcetype = \'digiquali_question\'';
-        $sql .= ' ORDER BY position ASC';
-        $res = $this->db->query($sql);
-        if ($res) {
-            while ($obj = $this->db->fetch_object($res)) {
+        $this->fetchObjectLinked('', '', $this->id, $this->table_element, 'OR', '', 'position');
 
-                $question = new Question($this->db);
-
-                $question->fetch($obj->fk_source);
-                $questions[] = $question;
-            }
+        if (!empty($this->linkedObjects['digiquali_question'])) {
+            return $this->linkedObjects['digiquali_question'];
+        } else {
+            return [];
         }
-        return $questions;
     }
 }

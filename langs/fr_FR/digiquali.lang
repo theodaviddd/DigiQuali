@@ -143,6 +143,7 @@ Questiongroup     = Groupe de questions
 QuestionGroups    = Groupes de questions
 NewQuestionGroup  = Nouveau groupe de questions
 QuestiongroupList = Liste des groupes de questions
+RemoveQuestionFromGroup = Question retirée du groupe
 
 #
 # Sheet

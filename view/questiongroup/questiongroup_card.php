@@ -146,6 +146,18 @@ if (empty($reshook)) {
 		$object->updateQuestionPosition($reIndexedIds);
 	}
 
+    if ($action == 'removeQuestion') {
+        $questionId = GETPOST('questionId', 'int');
+        if ($questionId > 0) {
+            $question->fetch($questionId);
+            $question->element = 'digiquali_'.$question->element;
+            $question->deleteObjectLinked('', '', $object->id, $object->table_element);
+
+            setEventMessages($langs->trans('RemoveQuestionFromGroup') . ' ' . $question->ref, array());
+        }
+        header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $object->id  . ($sheetId ? '&sheet_id=' . $sheetId : ''));
+    }
+
 	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
 }
@@ -331,8 +343,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	print '<div class="clearboth"></div>';
 
-
-
 	// Buttons for actions
 	if ($action != 'presend') {
 		print '<div class="tabsAction">';
@@ -396,7 +406,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     print '<thead><tr class="liste_titre">';
     print '<td>' . $langs->trans('Ref') . '</td>';
     print '<td>' . $langs->trans('Description') . '</td>';
-    print '<td></td>';
+    print '<td class="right" colspan="2">'. $langs->trans('Action') .'</td>';
     print '<td class="center"></td>';
     print '</tr></thead>';
 
@@ -405,7 +415,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     if (is_array($questionsLinked) && !empty($questionsLinked)) {
         foreach ($questionsLinked as $questionLinked) {
                 $alreadyAdded[] = $questionLinked->id;
-                //SHOW LINE
                 print '<tr id="' . $questionLinked->id . '" class="line-row oddeven">';
                 print '<td>';
                 print img_picto('', $questionLinked->picto, 'class="pictofixedwidth"') . $questionLinked->ref;
@@ -418,10 +427,15 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
                 print '<td class="center">';
                 if ($object->status < Question::STATUS_LOCKED) {
                     print '<td class="move-line ui-sortable-handle">';
+                    print '</td>';
+                    print '<td class="center">';
+                    $url = $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=removeQuestion&questionId=' . $questionLinked->id . '&token=' . newToken();
+                    print '<a class="reposition delete-question" id="" href="' . $url . '">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
                 } else {
                     print '</td>';
                     print '<td>';
                 }
+
                 print '</td>';
                 print '</tr>';
             }
