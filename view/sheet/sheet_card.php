@@ -833,8 +833,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         print '<tr class="add-line">';
         print '<td class="maxwidth300 widthcentpercentminusx">';
         print '<div id="addChoice">';
-        print '<button type="button" id="addQuestionButton" class="butAction">' . img_picto('', $question->picto) . ' ' . $langs->trans("Question") . ' ' . img_picto('', 'fa-plus') . '</button>';
-        print '<button type="button" id="addGroupButton" class="butAction">' . img_picto('', $questionGroup->picto) . ' ' . $langs->trans("QuestionGroup") . ' ' . img_picto('', 'fa-plus') . '</button>';
+        print '<button type="button" id="addQuestionButton" class="butAction">' . img_picto('', $question->picto) . ' ' . $langs->trans("Question") . ' ' . img_picto('', 'fa-link') . '</button>';
+        print '<button type="button" id="addGroupButton" class="butAction">' . img_picto('', $questionGroup->picto) . ' ' . $langs->trans("QuestionGroup") . ' ' . img_picto('', 'fa-link') . '</button>';
         print '</div>';
         print '</td>';
         print '<td colspan="9">';
