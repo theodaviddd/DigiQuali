@@ -309,31 +309,29 @@ class QuestionGroup extends SaturneObject
 	 *
 	 * @param  User      $user    User that creates
 	 * @param  int       $fromid  ID of object to clone
-	 * @param  array     $options Options array
 	 * @return int                New object created, < 0 if KO
 	 * @throws Exception
 	 */
-	public function createFromClone(User $user, int $fromid, array $options): int
+	public function createFromClone(User $user, int $fromid): int
 	{
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
-		global $conf;
 		$error = 0;
 
 		$object = new self($this->db);
-        $answer = new Answer($this->db);
 
 		$this->db->begin();
 
-		// Load source object
 		$object->fetchCommon($fromid);
+        $object->fetchObjectLinked('', '', $this->id, $this->table_element);
+
+        $previousQuestions = $object->linkedObjects['digiquali_question'];
 
 		// Reset some properties
 		unset($object->id);
 		unset($object->fk_user_creat);
 		unset($object->import_key);
 
-		$oldRef = $object->ref;
 
 		// Clear fields
 		if (property_exists($object, 'ref')) {
@@ -367,6 +365,11 @@ class QuestionGroup extends SaturneObject
 					$object->setCategories($categoryIds);
 				}
 			}
+            if (!empty($previousQuestions)) {
+                foreach ($previousQuestions as $previousQuestion) {
+                    $object->addQuestion($previousQuestion->id);
+                }
+            }
 		} else {
 			$error++;
 			$this->error  = $object->error;
