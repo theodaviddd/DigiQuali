@@ -14,7 +14,7 @@
 
 #id-right .margin-for-tree {
   padding-left: 200px;
-  width: 100%;
+  width: calc(100% - 200px);
   display: block;
 }
 
