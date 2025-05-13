@@ -682,7 +682,7 @@ class Sheet extends SaturneObject
         $questionCardUrl = dol_buildpath('/custom/digiquali/view/question/question_card.php', 1);
         $sheetCardUrl = dol_buildpath('/custom/digiquali/view/sheet/sheet_card.php', 1);
 
-        $out = '<div id="id-container" class="id-container page-ut-gp-list">';
+        $out = '<div id="id-container" class="id-container question-and-group-tree">';
         $out .= '<input type="hidden" name="token" value="'. newToken() . '"/>';
         $out .= '<input type="hidden" id="questionGroupCardUrl" value="'. $questionGroupCardUrl . '" />';
         $out .= '<input type="hidden" id="questionCardUrl" value="'. $questionCardUrl . '" />';
@@ -690,7 +690,7 @@ class Sheet extends SaturneObject
 
         $out .= '<div class="side-nav">';
         $out .= '  <div id="id-left">';
-        $out .= '    <div class="digirisk-wrap wpeo-wrap">';
+        $out .= '    <div class="nav-wrapper wpeo-wrap">';
         $out .= '      <div class="navigation-container">';
         $out .= '      <a href="'. $sheetCardUrl . '?id=' . $this->id . '" class="sheet-item-link">';
         $out .= '        <div class="sheet-header '. ($typeSelected == 'sheet' ? 'selected' : '') .'" data-id="'. $this->id .'">';
