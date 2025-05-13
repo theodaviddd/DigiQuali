@@ -215,6 +215,8 @@ class QuestionGroup extends SaturneObject
                 $this->add_object_linked('digiquali_sheet', GETPOST('sheet_id'));
 
                 $sheet->updateQuestionsAndGroupsPosition([], [], true);
+                $sheet->call_trigger('SHEET_ADDQUESTIONGROUP', $user);
+
             }
         }
         return $result;

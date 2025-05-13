@@ -411,6 +411,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     print '</tr></thead>';
 
     $questionsLinked = $object->fetchQuestionsOrderedByPosition();
+    $alreadyAdded = [];
 
     if (is_array($questionsLinked) && !empty($questionsLinked)) {
         foreach ($questionsLinked as $questionLinked) {
@@ -453,12 +454,19 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         print '<td>-</td>';
 
         print '<td>';
-        $filter = 't.rowid NOT IN (' . implode(',', $alreadyAdded) . ')';
+        if (!empty($alreadyAdded)) {
+            $filter = 't.rowid NOT IN (' . implode(',', $alreadyAdded) . ')';
+        } else {
+            $filter = '';
+        }
         $questionList = saturne_fetch_all_object_type('Question', '', '', 0, 0, ['customsql' => $filter]);
         $questionArray = [];
-        foreach($questionList as $questionId => $questionSingle) {
-            $questionArray[$questionId] = img_picto('', $questionSingle->picto) . ' ' . $questionSingle->ref . ' - ' . $questionSingle->label;
+        if (is_array($questionList) && !empty($questionList)) {
+            foreach($questionList as $questionId => $questionSingle) {
+                $questionArray[$questionId] = img_picto('', $questionSingle->picto) . ' ' . $questionSingle->ref . ' - ' . $questionSingle->label;
+            }
         }
+
 
         print $form->multiselectArray('questionId', $questionArray, GETPOST('questionId'), 0, 0, '', 0, 450, '', '', $langs->transnoentities('SelectMultipleQuestion'));
 
