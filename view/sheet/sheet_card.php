@@ -768,9 +768,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
                             ) . '</td>';
                         print '<td class="center">' . $question->getLibStatut(5) . '</td>';
                         print '<td class="center">';
-                        print '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=unlinkQuestion&questionId=' . $question->id . '">';
-                        print img_delete();
-                        print '</a>';
                         print '</td>';
                         print '</tr>';
                     }
