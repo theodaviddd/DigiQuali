@@ -509,7 +509,10 @@ class QuestionGroup extends SaturneObject
      * @param  int $questionId ID of question
      */
     public function addQuestion($questionId) {
+        global $user;
+
         $this->add_object_linked('digiquali_question', $questionId, $this->id, 'question_group');
+        $this->call_trigger('QUESTIONGROUP_ADDQUESTION', $user);
     }
 
     /**

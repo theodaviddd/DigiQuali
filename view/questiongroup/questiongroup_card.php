@@ -453,7 +453,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         print '<td>-</td>';
 
         print '<td>';
-        $questionList = saturne_fetch_all_object_type('Question', '', '', 0, 0, []);
+        $filter = 't.rowid NOT IN (' . implode(',', $alreadyAdded) . ')';
+        $questionList = saturne_fetch_all_object_type('Question', '', '', 0, 0, ['customsql' => $filter]);
         $questionArray = [];
         foreach($questionList as $questionId => $questionSingle) {
             $questionArray[$questionId] = img_picto('', $questionSingle->picto) . ' ' . $questionSingle->ref . ' - ' . $questionSingle->label;
