@@ -127,10 +127,14 @@ if (empty($reshook)) {
 	}
 
     if ($action == 'add_question') {
-        $object->addQuestion(GETPOST('questionId'));
+        $questionIds = GETPOST('questionId', 'array');
+        if (is_array($questionIds) && !empty($questionIds)) {
+            foreach ($questionIds as $questionId) {
+                $object->addQuestion($questionId);
+            }
+        }
 
         header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $object->id  . ($sheetId ? '&sheet_id=' . $sheetId : ''));
-
     }
 
 	if ($action == 'moveLine' && $permissiontoadd) {
@@ -435,8 +439,13 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         print '<td>-</td>';
 
         print '<td>';
+        $questionList = saturne_fetch_all_object_type('Question', '', '', 0, 0, []);
+        $questionArray = [];
+        foreach($questionList as $questionId => $questionSingle) {
+            $questionArray[$questionId] = img_picto('', $questionSingle->picto) . ' ' . $questionSingle->ref . ' - ' . $questionSingle->label;
+        }
 
-        print $question->selectQuestionList(GETPOST('questionId'), 'questionId', '', $langs->trans('SelectQuestion'), '', '', '', '', '', '', '', '', '', $alreadyAdded);
+        print $form->multiselectArray('questionId', $questionArray, GETPOST('questionId'), 0, 0, '', 0, 450, '', '', $langs->transnoentities('SelectMultipleQuestion'));
 
         print '<td class="center">';
         print '<input type="submit" class="button wpeo-button" value="' . $langs->trans("Add") . '">';

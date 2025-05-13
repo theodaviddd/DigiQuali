@@ -79,6 +79,7 @@ Question                      = Question
 Questions                     = questions
 TheQuestion                   = la question
 QuestionList                  = Liste des questions
+SelectMultipleQuestion        = Sélectionnez une ou plusieurs questions
 NewQuestion                   = Nouvelle question
 ModifyQuestion                = Modifier une question
 LinkedQuestionsList           = Liste des questions liées (%s)
