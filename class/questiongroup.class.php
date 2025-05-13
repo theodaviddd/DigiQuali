@@ -42,7 +42,7 @@ class QuestionGroup extends SaturneObject
     /**
      * @var string Name of table without prefix where object is stored. This is also the key used for extrafields management
      */
-    public $table_element = 'digiquali_question_group';
+    public $table_element = 'digiquali_questiongroup';
 
     /**
      * @var int Does this object support multicompany module ?
@@ -433,7 +433,7 @@ class QuestionGroup extends SaturneObject
 		}
 		// On recherche les societes
 		$sql  = "SELECT *";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "digiquali_question_group as s";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "digiquali_questiongroup as s";
 
 		$sql              .= " WHERE s.entity IN (" . getEntity($this->table_element) . ")";
 		if ($filter) $sql .= " AND (" . $filter . ")";

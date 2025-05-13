@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2022-2025 EVARISK <technique@evarisk.com>
+/* Copyright (C) 2025 EVARISK <technique@evarisk.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -211,7 +211,7 @@ if (empty($resHook)) {
  */
 
 $title = $langs->trans(ucfirst($object->element) . 'List');
-saturne_header(0,'', $title, $helpUrl ?? '', '', 0, 0, [], [], '', 'mod-' . $object->module . '-' . $object->element . ' page-list bodyforlist');
+saturne_header(0,'', $title, '', '', 0, 0, [], [], '', 'mod-' . $object->module . '-' . $object->element . ' page-list bodyforlist');
 
 require_once __DIR__ . '/../../../saturne/core/tpl/list/objectfields_list_build_sql_select.tpl.php';
 require_once __DIR__ . '/../../../saturne/core/tpl/list/objectfields_list_header.tpl.php';

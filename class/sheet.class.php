@@ -615,6 +615,9 @@ class Sheet extends SaturneObject
      */
     public function fetchQuestionsAndGroups() {
 
+        require_once __DIR__ . '/question.class.php';
+        require_once __DIR__ . '/questiongroup.class.php';
+
         $sql = 'SELECT ee.fk_target, ee.targettype, ee.position';
         $sql .= ' FROM ' . MAIN_DB_PREFIX . 'element_element as ee';
         $sql .= ' WHERE ee.fk_source = ' . $this->id;

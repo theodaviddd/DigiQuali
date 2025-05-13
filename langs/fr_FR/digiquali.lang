@@ -137,10 +137,11 @@ PercentageQuestionStep        = Nombre d'étapes du curseur
 #
 
 # Data - Donnée
-QuestionGroup    = Groupe de questions
-Questiongroup    = Groupe de questions
-QuestionGroups   = Groupes de questions
-NewQuestionGroup = Nouveau groupe de questions
+QuestionGroup     = Groupe de questions
+Questiongroup     = Groupe de questions
+QuestionGroups    = Groupes de questions
+NewQuestionGroup  = Nouveau groupe de questions
+QuestiongroupList = Liste des groupes de questions
 
 #
 # Sheet

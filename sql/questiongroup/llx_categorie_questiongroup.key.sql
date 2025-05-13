@@ -13,8 +13,8 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see https://www.gnu.org/licenses/.
 
-CREATE TABLE llx_categorie_question_group(
-	fk_categorie  integer NOT NULL,
-  fk_question_group   integer NOT NULL,
-  import_key    varchar(14)
-) ENGINE=innodb;
+ALTER TABLE llx_categorie_questiongroup ADD PRIMARY KEY pk_categorie_questiongroup (fk_categorie, fk_questiongroup);
+ALTER TABLE llx_categorie_questiongroup ADD INDEX idx_categorie_questiongroup_fk_categorie (fk_categorie);
+ALTER TABLE llx_categorie_questiongroup ADD INDEX idx_categorie_questiongroup_fk_question_group (fk_questiongroup);
+ALTER TABLE llx_categorie_questiongroup ADD CONSTRAINT fk_categorie_questiongroup_categorie_rowid FOREIGN KEY (fk_categorie) REFERENCES llx_categorie (rowid);
+ALTER TABLE llx_categorie_questiongroup ADD CONSTRAINT fk_categorie_questiongroup_digiquali_question_group_rowid FOREIGN KEY (fk_question) REFERENCES llx_digiquali_questiongroup (rowid);

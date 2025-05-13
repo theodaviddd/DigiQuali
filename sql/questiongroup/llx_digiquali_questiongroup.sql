@@ -1,4 +1,4 @@
--- Copyright (C) 2022-2025 EVARISK <technique@evarisk.com>
+-- Copyright (C) 2025 EVARISK <technique@evarisk.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -13,8 +13,17 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see https://www.gnu.org/licenses/.
 
-ALTER TABLE llx_digiquali_question_group ADD INDEX idx_digiquali_question_group_rowid (rowid);
-ALTER TABLE llx_digiquali_question_group ADD INDEX idx_digiquali_question_group_ref (ref);
-ALTER TABLE llx_digiquali_question_group ADD INDEX idx_digiquali_question_group_status (status);
-ALTER TABLE llx_digiquali_question_group ADD UNIQUE INDEX uk_digiquali_question_group_ref (ref, entity);
-ALTER TABLE llx_digiquali_question_group ADD CONSTRAINT llx_digiquali_question_group_fk_user_creat FOREIGN KEY (fk_user_creat) REFERENCES llx_user(rowid);
+CREATE TABLE llx_digiquali_questiongroup(
+  rowid         integer AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  ref           varchar(128) DEFAULT '(PROV)' NOT NULL,
+  ref_ext       varchar(128),
+  entity        integer DEFAULT 1 NOT NULL,
+  date_creation datetime NOT NULL,
+  tms           timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  import_key    varchar(14),
+  status        integer DEFAULT 1 NOT NULL,
+  label         varchar(255) NOT NULL,
+  description   text,
+  fk_user_creat integer NOT NULL,
+  fk_user_modif integer
+) ENGINE=innodb;

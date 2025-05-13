@@ -13,8 +13,8 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see https://www.gnu.org/licenses/.
 
-ALTER TABLE llx_categorie_question_group ADD PRIMARY KEY pk_categorie_question_group (fk_categorie, fk_question_group);
-ALTER TABLE llx_categorie_question_group ADD INDEX idx_categorie_question_group_fk_categorie (fk_categorie);
-ALTER TABLE llx_categorie_question_group ADD INDEX idx_categorie_question_group_fk_question_group (fk_question_group);
-ALTER TABLE llx_categorie_question_group ADD CONSTRAINT fk_categorie_question_group_categorie_rowid FOREIGN KEY (fk_categorie) REFERENCES llx_categorie (rowid);
-ALTER TABLE llx_categorie_question_group ADD CONSTRAINT fk_categorie_question_group_digiquali_question_group_rowid FOREIGN KEY (fk_question) REFERENCES llx_digiquali_question_group (rowid);
+ALTER TABLE llx_digiquali_questiongroup ADD INDEX idx_digiquali_questiongroup_rowid (rowid);
+ALTER TABLE llx_digiquali_questiongroup ADD INDEX idx_digiquali_questiongroup_ref (ref);
+ALTER TABLE llx_digiquali_questiongroup ADD INDEX idx_digiquali_questiongroup_status (status);
+ALTER TABLE llx_digiquali_questiongroup ADD UNIQUE INDEX uk_digiquali_questiongroup_ref (ref, entity);
+ALTER TABLE llx_digiquali_questiongroup ADD CONSTRAINT llx_digiquali_questiongroup_fk_user_creat FOREIGN KEY (fk_user_creat) REFERENCES llx_user(rowid);
