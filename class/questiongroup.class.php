@@ -512,7 +512,7 @@ class QuestionGroup extends SaturneObject
     /**
      * Move questions
      */
-    public function updateQuestionGroupPosition($questionIds)
+    public function updateQuestionPosition($questionIds)
     {
 
         foreach ($questionIds as $position => $questionId) {
@@ -521,7 +521,7 @@ class QuestionGroup extends SaturneObject
             $sql .= ' WHERE fk_source = ' . $questionId;
             $sql .= ' AND sourcetype = \'digiquali_question\'';
             $sql .= ' AND fk_target = ' . $this->id;
-            $sql .= ' AND targettype = \'digiquali_question_group\'';
+            $sql .= ' AND targettype = \'digiquali_questiongroup\'';
             $res = $this->db->query($sql);
 
             if (!$res) {
