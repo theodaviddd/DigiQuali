@@ -675,7 +675,18 @@ class Sheet extends SaturneObject
 
     public function getQuestionAndGroupsTree($typeSelected = 'sheet', $idSelected = 0, $parentGroupId = 0)
     {
-        global $conf;
+        global $langs, $moduleNameLowerCase, $conf;
+
+
+        require_once __DIR__ . '/question.class.php';
+        require_once __DIR__ . '/questiongroup.class.php';
+
+        $numberingModules = [
+            'question' => $conf->global->DIGIQUALI_QUESTION_ADDON,
+            'questiongroup' => $conf->global->DIGIQUALI_QUESTIONGROUP_ADDON,
+        ];
+
+        list($modQuestion, $modQuestionGroup) = saturne_require_objects_mod($numberingModules, $moduleNameLowerCase);
 
         $questionAndGroups = $this->fetchQuestionsAndGroups();
         $questionGroupCardUrl = dol_buildpath('/custom/digiquali/view/questiongroup/questiongroup_card.php', 1);
@@ -696,7 +707,21 @@ class Sheet extends SaturneObject
         $out .= '        <div class="sheet-header '. ($typeSelected == 'sheet' ? 'selected' : '') .'" data-id="'. $this->id .'">';
         $out .= '            <span class="icon fas fa-list fa-fw"></span>';
         $out .= '            <div class="title">&nbsp;' . $this->label .'</div>';
+        $out .= '            <div class="add-object-container">';
+        $out .= '              <a id="newGroup" href="' . $questionGroupCardUrl . '?action=create&sheet_id='. $this->id . '">';
+        $out .= '                <div class="wpeo-button button-square-40 button-secondary wpeo-tooltip-event" data-direction="bottom" data-color="light" aria-label="' . $langs->trans('NewGroup') . '">';
+        $out .= '                  <strong>'. $modQuestionGroup->prefix .'</strong><span class="button-add animated fas fa-plus-circle"></span>';
+        $out .= '                </div>';
+        $out .= '              </a>';
+        $out .= '              <a id="newQuestion" href="' . $questionCardUrl . '?action=create&sheet_id='. $this->id . '">';
+        $out .= '                <div class="wpeo-button button-square-40 wpeo-tooltip-event" data-direction="bottom" data-color="light" aria-label="' . $langs->trans('NewQuestion') . '">';
+        $out .= '                  <strong>'. $modQuestion->prefix .'</strong><span class="button-add animated fas fa-plus-circle"></span>';
+        $out .= '                </div>';
+        $out .= '              </a>';
+        $out .= '            </div>';
         $out .= '        </div>';
+
+
         $out .= '      </a>';
 
         if (!empty($questionAndGroups)) {
@@ -765,14 +790,6 @@ class Sheet extends SaturneObject
                     </script>';
         }
 
-        $out .= '        <div class="create-buttons-container" style="display:flex; flex-direction:row; gap:10px; margin-top:10px;">';
-        $out .= '          <a href="'. $questionGroupCardUrl . '?action=create&sheet_id='. $this->id .'" class="btn btn-square">';
-        $out .= '            <span class="icon fas fa-copy fa-fw"></span> Nouveau groupe';
-        $out .= '          </a>';
-        $out .= '          <a href="'. $questionCardUrl . '?action=create&sheet_id='. $this->id .'" class="btn btn-square">';
-        $out .= '            <span class="icon fas fa-question fa-fw"></span> Nouvelle question';
-        $out .= '          </a>';
-        $out .= '        </div>';
         $out .= '      </div>';
         $out .= '    </div>';
         $out .= '  </div>';

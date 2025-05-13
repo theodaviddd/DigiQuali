@@ -18,6 +18,27 @@
   display: block;
 }
 
+.sheet-header {
+  position: relative;
+}
+
+.sheet-header .add-object-container {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+.sheet-header:hover .add-object-container {
+  opacity: 1;
+  pointer-events: auto;
+}
 
 .question-and-group-tree .side-nav {
   position: absolute;
