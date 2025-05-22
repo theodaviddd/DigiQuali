@@ -521,7 +521,7 @@ class Sheet extends SaturneObject
 
         if ($reindexLast) {
             $sql = 'UPDATE ' . MAIN_DB_PREFIX . 'element_element';
-            $sql .= ' SET position = ( SELECT MAX(position) + 1 FROM llx_element_element WHERE fk_source = 11 AND sourcetype = "digiquali_sheet" )';
+            $sql .= ' SET position = ( SELECT MAX(position) + 1 FROM llx_element_element WHERE fk_source = '. $this->id .' AND sourcetype = "digiquali_sheet" )';
             $sql .= ' WHERE fk_source = ' . $this->id;
             $sql .= ' AND sourcetype = "digiquali_sheet"';
             $sql .= ' AND (targettype = "digiquali_question" OR targettype = "digiquali_questiongroup")';
@@ -675,14 +675,25 @@ class Sheet extends SaturneObject
 
     public function getQuestionAndGroupsTree($typeSelected = 'sheet', $idSelected = 0, $parentGroupId = 0)
     {
-        global $conf;
+        global $langs, $moduleNameLowerCase, $conf;
+
+
+        require_once __DIR__ . '/question.class.php';
+        require_once __DIR__ . '/questiongroup.class.php';
+
+        $numberingModules = [
+            'question' => $conf->global->DIGIQUALI_QUESTION_ADDON,
+            'questiongroup' => $conf->global->DIGIQUALI_QUESTIONGROUP_ADDON,
+        ];
+
+        list($modQuestion, $modQuestionGroup) = saturne_require_objects_mod($numberingModules, $moduleNameLowerCase);
 
         $questionAndGroups = $this->fetchQuestionsAndGroups();
         $questionGroupCardUrl = dol_buildpath('/custom/digiquali/view/questiongroup/questiongroup_card.php', 1);
         $questionCardUrl = dol_buildpath('/custom/digiquali/view/question/question_card.php', 1);
         $sheetCardUrl = dol_buildpath('/custom/digiquali/view/sheet/sheet_card.php', 1);
 
-        $out = '<div id="id-container" class="id-container page-ut-gp-list">';
+        $out = '<div id="id-container" class="id-container question-and-group-tree">';
         $out .= '<input type="hidden" name="token" value="'. newToken() . '"/>';
         $out .= '<input type="hidden" id="questionGroupCardUrl" value="'. $questionGroupCardUrl . '" />';
         $out .= '<input type="hidden" id="questionCardUrl" value="'. $questionCardUrl . '" />';
@@ -690,13 +701,27 @@ class Sheet extends SaturneObject
 
         $out .= '<div class="side-nav">';
         $out .= '  <div id="id-left">';
-        $out .= '    <div class="digirisk-wrap wpeo-wrap">';
+        $out .= '    <div class="nav-wrapper wpeo-wrap">';
         $out .= '      <div class="navigation-container">';
         $out .= '      <a href="'. $sheetCardUrl . '?id=' . $this->id . '" class="sheet-item-link">';
         $out .= '        <div class="sheet-header '. ($typeSelected == 'sheet' ? 'selected' : '') .'" data-id="'. $this->id .'">';
         $out .= '            <span class="icon fas fa-list fa-fw"></span>';
         $out .= '            <div class="title">&nbsp;' . $this->label .'</div>';
+        $out .= '            <div class="add-object-container">';
+        $out .= '              <a id="newGroup" href="' . $questionGroupCardUrl . '?action=create&sheet_id='. $this->id . '">';
+        $out .= '                <div class="wpeo-button button-square-40 button-secondary wpeo-tooltip-event" data-direction="bottom" data-color="light" aria-label="' . $langs->trans('NewQuestionGroup') . '">';
+        $out .= '                  <strong>'. $modQuestionGroup->prefix .'</strong><span class="button-add animated fas fa-plus-circle"></span>';
+        $out .= '                </div>';
+        $out .= '              </a>';
+        $out .= '              <a id="newQuestion" href="' . $questionCardUrl . '?action=create&sheet_id='. $this->id . '">';
+        $out .= '                <div class="wpeo-button button-square-40 wpeo-tooltip-event" data-direction="bottom" data-color="light" aria-label="' . $langs->trans('NewQuestion') . '">';
+        $out .= '                  <strong>'. $modQuestion->prefix .'</strong><span class="button-add animated fas fa-plus-circle"></span>';
+        $out .= '                </div>';
+        $out .= '              </a>';
+        $out .= '            </div>';
         $out .= '        </div>';
+
+
         $out .= '      </a>';
 
         if (!empty($questionAndGroups)) {
@@ -704,8 +729,11 @@ class Sheet extends SaturneObject
             $out .= '        <ul class="question-list">';
             foreach ($questionAndGroups as $questionOrGroup) {
                 if ($questionOrGroup->element == 'questiongroup') {
+                    $questionsInGroup = $questionOrGroup->fetchQuestionsOrderedByPosition();
+                    $groupHasQuestions = !empty($questionsInGroup);
+
                     $out .= '  <li class="group-item '. ($typeSelected == 'questiongroup' && $idSelected == $questionOrGroup->id ? 'selected' : '') .'" data-id="'. $questionOrGroup->id .'">';
-                    $out .= '    <span class="icon fas fa-chevron-down fa-fw toggle-group-in-tree" style="margin-right: 10px;"></span>';
+                    $out .= '    <span class="icon fas '. ($groupHasQuestions ? 'fa-chevron-up' : '') . ' fa-fw toggle-group-in-tree" style="margin-right: 10px;"></span>';
                     $out .= '    <span class="icon fas fa-folder fa-2x"></span>';
                     $out .= '    <a href="'. $questionGroupCardUrl . '?id=' . $questionOrGroup->id . '&sheet_id='. $this->id .'" class="group-item-link">';
                     $out .= '      <div class="title-container">';
@@ -718,9 +746,8 @@ class Sheet extends SaturneObject
                     $out .= '    </a>';
                     $out .= '  </li>';
 
-                    $questionsInGroup = $questionOrGroup->fetchQuestionsOrderedByPosition();
-                    if (!empty($questionsInGroup)) {
-                        $out .= '  <ul class="sub-questions">';
+                    if ($groupHasQuestions) {
+                        $out .= '  <ul class="sub-questions collapsed">';
                         foreach ($questionsInGroup as $q) {
                             $out .= '    <li class="question-item '. ($typeSelected == 'question' && $idSelected == $q->id && $parentGroupId == $questionOrGroup->id ? 'selected' : '') .'" data-id="'. $q->id .'" data-group-id="'. $q->fk_question_group.'">';
                             $out .= '      <span class="icon fas fa-question fa-2x"></span>';
@@ -765,14 +792,6 @@ class Sheet extends SaturneObject
                     </script>';
         }
 
-        $out .= '        <div class="create-buttons-container" style="display:flex; flex-direction:row; gap:10px; margin-top:10px;">';
-        $out .= '          <a href="'. $questionGroupCardUrl . '?action=create&sheet_id='. $this->id .'" class="btn btn-square">';
-        $out .= '            <span class="icon fas fa-copy fa-fw"></span> Nouveau groupe';
-        $out .= '          </a>';
-        $out .= '          <a href="'. $questionCardUrl . '?action=create&sheet_id='. $this->id .'" class="btn btn-square">';
-        $out .= '            <span class="icon fas fa-question fa-fw"></span> Nouvelle question';
-        $out .= '          </a>';
-        $out .= '        </div>';
         $out .= '      </div>';
         $out .= '    </div>';
         $out .= '  </div>';

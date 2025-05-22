@@ -1,4 +1,4 @@
-.page-ut-gp-list {
+.question-and-group-tree {
   margin-left: -40px;
   box-sizing: border-box;
   display: block !important;
@@ -12,16 +12,42 @@
   }
 }
 
-/** Screen */
+.side-nav #id-left {
+  resize: horizontal;
+  overflow: auto;
+  min-width: 150px;
+  max-width: 400px;
+}
+
 #id-right .margin-for-tree {
   padding-left: 200px;
-  width: 100%;
+  width: calc(100% - 200px);
   display: block;
 }
 
+.sheet-header {
+  position: relative;
+}
 
-/** UT / GP Navigation */
-.page-ut-gp-list .side-nav {
+.sheet-header .add-object-container {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+.sheet-header:hover .add-object-container {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.question-and-group-tree .side-nav {
   position: absolute;
   height: 100%;
   top: 0;
@@ -36,12 +62,10 @@
     width: 200px;
     padding-top: 0;
   }
-  .digirisk-wrap {
+  .nav-wrapper {
     padding: 0 !important;
   }
   .navigation-container {
-    //padding-left: 10px;
-    //padding-right: 10px;
     max-height:1000px;
     overflow-y: auto;
     height: 90vh;
@@ -62,8 +86,7 @@
 
 }
 
-/** Header */
-.page-ut-gp-list .side-nav .sheet-header {
+.question-and-group-tree .side-nav .sheet-header {
   padding-top: 27px;
   position: relative;
   padding-left: 10px;
@@ -93,19 +116,13 @@
   }
 }
 
-
-/** ─────────────────────────────────────────────
-    LISTE DES GROUPES / QUESTIONS
-───────────────────────────────────────────── **/
-
-.page-ut-gp-list .side-nav .question-list {
+.question-and-group-tree .side-nav .question-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-/** GROUPE (ex: GP5 + "Industrie Standard") **/
-.page-ut-gp-list .side-nav .group-item {
+.question-and-group-tree .side-nav .group-item {
   display: flex;
   align-items: center;
   padding: 10px 12px;
@@ -121,27 +138,24 @@
   border-radius: 5px;
 }
 
-.page-ut-gp-list .side-nav .group-item.selected {
+.question-and-group-tree .side-nav .group-item.selected {
   background: rgba(0, 0, 0, 0.08);
   border-left: 4px solid #1E437B;
 }
 
-/* Chevron pour dérouler/replier */
-.page-ut-gp-list .side-nav .group-item .toggle-group-in-tree {
+.question-and-group-tree .side-nav .group-item .toggle-group-in-tree {
   font-size: 14px;
   color: #666;
 }
 
-/* Conteneur du texte */
-.page-ut-gp-list .side-nav .group-item .title-container {
+.question-and-group-tree .side-nav .group-item .title-container {
   display: flex;
   flex-direction: column;
   margin-left: 10px;
   flex-grow: 1;
 }
 
-/* Bouton d'ajout de question en hover sur un groupe */
-.page-ut-gp-list .side-nav .group-item .add-question-btn {
+.question-and-group-tree .side-nav .group-item .add-question-btn {
   display: none;
   position: absolute;
   right: 10px;
@@ -150,17 +164,16 @@
   transition: all 0.2s ease;
 }
 
-.page-ut-gp-list .side-nav .group-item:hover .add-question-btn {
+.question-and-group-tree .side-nav .group-item:hover .add-question-btn {
   display: block;
 }
 
-.page-ut-gp-list .side-nav .group-item .add-question-btn:hover {
+.question-and-group-tree .side-nav .group-item .add-question-btn:hover {
   color: #3e67a8;
   transform: scale(1.2);
 }
 
-/* Référence (ex: GP5) */
-.page-ut-gp-list .side-nav .group-item .title-container .ref {
+.question-and-group-tree .side-nav .group-item .title-container .ref {
   font-size: 10px;
   color: #fff;
   text-transform: uppercase;
@@ -172,22 +185,19 @@
   padding: .2em .4em;
 }
 
-/* Label (ex: Industrie Standard) */
-.page-ut-gp-list .side-nav .group-item .title-container .label {
+.question-and-group-tree .side-nav .group-item .title-container .label {
   font-size: 14px;
   color: #000;
   font-weight: 500;
   line-height: 1.2;
 }
 
-/* Survol d'un groupe */
-.page-ut-gp-list .side-nav .group-item:hover {
+.question-and-group-tree .side-nav .group-item:hover {
   background: rgba(0, 0, 0, 0.05);
   border-left-color: #999;
 }
 
-/** QUESTIONS (ex: WU5 + "Bureaux - Administration") **/
-.page-ut-gp-list .side-nav .question-item {
+.question-and-group-tree .side-nav .question-item {
   display: flex;
   align-items: center;
   padding: 8px 12px;
@@ -200,24 +210,22 @@
   border-radius: 5px;
 }
 
-.page-ut-gp-list .side-nav .question-item.selected {
+.question-and-group-tree .side-nav .question-item.selected {
   background: rgba(0, 0, 0, 0.08);
   border-left: 4px solid #1E437B;
 }
 
-.page-ut-gp-list .side-nav .icon {
+.question-and-group-tree .side-nav .icon {
   font-size: 18px;
   color: #666;
 }
-/* Conteneur texte */
-.page-ut-gp-list .side-nav .question-item .title-container {
+.question-and-group-tree .side-nav .question-item .title-container {
   display: flex;
   flex-direction: column;
   margin-left: 10px;
 }
 
-/* Référence (ex: WU5) */
-.page-ut-gp-list .side-nav .question-item .title-container .ref {
+.question-and-group-tree .side-nav .question-item .title-container .ref {
   font-size: 10px;
   color: #fff;
   text-transform: uppercase;
@@ -229,35 +237,28 @@
   padding: .2em .4em;
 }
 
-/* Label (ex: Bureaux - Administration) */
-.page-ut-gp-list .side-nav .question-item .title-container .label {
+.question-and-group-tree .side-nav .question-item .title-container .label {
   font-size: 13px;
   color: #333;
   font-weight: 500;
   margin-top: 2px;
 }
 
-/* Survol question */
-.page-ut-gp-list .side-nav .question-item:hover {
+.question-and-group-tree .side-nav .question-item:hover {
   background: rgba(0, 0, 0, 0.03);
 }
 
-/** SOUS-NIVEAUX (Sub-Questions) **/
-.page-ut-gp-list .side-nav .sub-questions {
+.question-and-group-tree .side-nav .sub-questions {
   margin: 0;
   padding: 0;
   list-style: none;
   margin-left: 20px;
 }
 
-/* Affichage/masquage des sous-questions */
-.page-ut-gp-list .side-nav .sub-questions.collapsed {
+.question-and-group-tree .side-nav .sub-questions.collapsed {
   display: none;
 }
 
-/** ─────────────────────────────────────────────
-    BOUTONS EN BAS
-───────────────────────────────────────────── **/
 .create-buttons-container {
   display: flex;
   gap: 10px;
@@ -265,11 +266,10 @@
   padding: 10px;
 }
 
-/* Boutons carrés */
 .create-buttons-container .btn-square {
   flex: 1;
-  width: 100px; /* Taille fixe pour garder la forme carrée */
-  height: 100px; /* Assure la symétrie */
+  width: 100px;
+  height: 100px;
   background-color: #e0e0e0;
   color: #000;
   border: 1px solid #ccc;
@@ -278,31 +278,30 @@
   font-size: 14px;
   cursor: pointer;
   display: flex;
-  flex-direction: column; /* Alignement vertical */
-  justify-content: flex-start; /* Aligne en haut */
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
   transition: background-color 0.2s ease;
   text-decoration: none;
   border-radius: 5px;
-  padding-top: 10px; /* Ajoute un espace entre le haut du carré et l'icône */
+  padding-top: 10px;
 }
 
 .create-buttons-container .btn-square .icon {
-  font-size: 24px; /* Taille plus grande pour bien voir */
-  margin-bottom: 8px; /* Espace entre le picto et le texte */
+  font-size: 24px;
+  margin-bottom: 8px;
 }
 
 .create-buttons-container .btn-square:hover {
   background-color: #ccc;
 }
 
-/* Suppression soulignement liens */
-.page-ut-gp-list .side-nav a {
+.question-and-group-tree .side-nav a {
   text-decoration: none;
 }
 
-.page-ut-gp-list .side-nav a:hover,
-.page-ut-gp-list .side-nav a:focus,
-.page-ut-gp-list .side-nav a:active {
+.question-and-group-tree .side-nav a:hover,
+.question-and-group-tree .side-nav a:focus,
+.question-and-group-tree .side-nav a:active {
   text-decoration: none;
 }

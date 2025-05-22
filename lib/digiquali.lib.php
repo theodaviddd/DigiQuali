@@ -43,6 +43,11 @@ function digiquali_admin_prepare_head(): array
     $head[$h][2] = 'question';
     $h++;
 
+    $head[$h][0] = dol_buildpath('/digiquali/admin/questiongroup.php', 1);
+    $head[$h][1] = $conf->browser->layout != 'phone' ? '<i class="fas fa-folder-open pictofixedwidth"></i>' . $langs->trans('QuestionGroup') : '<i class="fas fa-folder-open"></i>';
+    $head[$h][2] = 'questiongroup';
+    $h++;
+
     $head[$h][0] = dol_buildpath('/saturne/admin/object.php', 1) . '?module_name=DigiQuali&object_type=answer';
     $head[$h][1] = $conf->browser->layout != 'phone' ? '<i class="fas fa-arrow-right pictofixedwidth"></i>' . $langs->trans('Answer') : '<i class="fas fa-arrow-right"></i>';
     $head[$h][2] = 'answer';

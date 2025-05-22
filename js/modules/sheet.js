@@ -30,8 +30,15 @@ window.digiquali.sheet.event = function() {
 
   $( document ).on( 'click', '.toggle-group-in-tree', window.digiquali.sheet.toggleGroupInTree );
   $( document ).on( 'click', '#addQuestionButton, #addGroupButton', window.digiquali.sheet.buttonActions );
+  $(document).on('mouseenter', '.sheet-move-line.ui-sortable-handle', window.digiquali.sheet.draganddrop);
 };
 
+/**
+ * Show or hide the add question or group row
+ *
+ * @since   20.1.0
+ * @version 20.1.0
+ */
 window.digiquali.sheet.buttonActions = function() {
   const addQuestionRow = $('#addQuestionRow');
   const addGroupRow = $('#addGroupRow');
@@ -45,7 +52,13 @@ window.digiquali.sheet.buttonActions = function() {
   }
 }
 
-
+/**
+ * Show or hide the sub-questions of a group
+ *
+ * @since   20.1.0
+ * @version 20.1.0
+ * @param groupId
+ */
 window.digiquali.sheet.toggleGroup = function(groupId) {
   const groupQuestions = $(`.group-question-${groupId}`);
   const toggleIcon = $(`#group-${groupId} .toggle-icon`);
@@ -57,7 +70,12 @@ window.digiquali.sheet.toggleGroup = function(groupId) {
   });
 }
 
-
+/**
+ * Close all groups
+ *
+ * @since   20.1.0
+ * @version 20.1.0
+ */
 window.digiquali.sheet.closeAllGroups = function () {
   const groupQuestions = $('.group-question');
   const toggleIcons = $('.toggle-icon');
@@ -66,7 +84,12 @@ window.digiquali.sheet.closeAllGroups = function () {
   toggleIcons.text('+');
 }
 
-
+/**
+ * Show or hide the sub-questions of a group
+ *
+ * @since   20.1.0
+ * @version 20.1.0
+ */
 window.digiquali.sheet.toggleGroupInTree = function () {
   let subQuestions = $(this).closest('.group-item').next()[0];
   $(this).toggleClass('fa-chevron-up fa-chevron-down');
@@ -76,6 +99,12 @@ window.digiquali.sheet.toggleGroupInTree = function () {
   }
 }
 
+/**
+ * Grey out the question or group selected
+ *
+ * @since   20.1.0
+ * @version 20.1.0
+ */
 window.digiquali.sheet.greyOut = function () {
   const questionGroups = $('.group-item');
   const questions = $('.question-item');
@@ -98,51 +127,42 @@ window.digiquali.sheet.draganddrop = function () {
   $(this).css('cursor', 'pointer');
 
   $('#tablelines tbody').sortable({
-    handle: '.move-line',
-    items: '> .line-row',
-    tolerance: 'intersect',
-    stop: function (event, ui) {
+    handle: '.sheet-move-line',
+    connectWith:'#tablelines tbody .line-row',
+    tolerance:'intersect',
+    over:function(){
+      $(this).css('cursor', 'grabbing');
+    },
+    stop: function() {
       $(this).css('cursor', 'default');
+      let token = $('.fiche').find('input[name="token"]').val();
 
-      const movedRow = ui.item;
-      const movedRowId = movedRow.attr('id');
-
-      if (movedRow.hasClass('question-group')) {
-        const groupId = movedRowId.replace('group-', '');
-        const questions = $(`.group-question-${groupId}`);
-
-        questions.each(function () {
-          $(this).insertAfter(movedRow);
-        });
+      let separator = '&'
+      if (document.URL.match(/action=/)) {
+        document.URL = document.URL.split(/\?/)[0]
+        separator = '?'
       }
-
       let lineOrder = [];
-      $('.line-row').each(function () {
+      $('.line-row').each(function(  ) {
         lineOrder.push($(this).attr('id'));
       });
 
-      const token = window.saturne.utils.getToken();
-
-      let separator = window.saturne.utils.getQuerySeparator();
+      window.saturne.loader.display($('.side-nav .question-list'));
 
       $.ajax({
         url: document.URL + separator + "action=moveLine&token=" + token,
         type: "POST",
         data: JSON.stringify({
-          order: lineOrder,
+          order: lineOrder
         }),
         processData: false,
-        contentType: 'application/json',
+        contentType: false,
+        success: function (resp) {
+          $('.side-nav .question-list').html($(resp).find('.side-nav .question-list'));
+          window.saturne.loader.remove($('.side-nav .question-list'));
+        },
+        error: function() {}
       });
-    },
-    receive: function (event, ui) {
-      const movedRow = ui.item;
-      if (movedRow.hasClass('group-question')) {
-        const targetGroup = ui.placeholder.closest('.question-group');
-        if (targetGroup.length) {
-          $(this).sortable('cancel');
-        }
-      }
-    },
+    }
   });
 };

@@ -32,7 +32,7 @@ if (is_array($questions) && !empty($questions)) {
     foreach ($questions as $question) {
         $questionAnswer = '';
         $comment        = '';
-        $result         = $objectLine->fetchFromParentWithQuestion($object->id, $question->id);
+        $result         = $objectLine->fetchFromParentWithQuestion($object->id, $question->id, $question->fk_question_group);
         if (is_array($result) && !empty($result)) {
             $objectLine = array_shift($result);
             $questionAnswer = $objectLine->answer;

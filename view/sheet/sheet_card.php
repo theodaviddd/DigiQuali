@@ -159,6 +159,18 @@ if (empty($reshook)) {
 		exit;
 	}
 
+    if ($action == 'unlinkQuestionGroup' && $permissiontoadd) {
+        $questionGroupId = GETPOST('questionGroupId');
+        $questionGroup->fetch($questionGroupId);
+        $questionGroup->element = 'digiquali_'.$questionGroup->element;
+        $questionGroup->deleteObjectLinked($id, 'digiquali_' . $object->element);
+
+        setEventMessages($langs->trans('RemoveQuestionGroupLink') . ' ' . $questionGroup->ref, array());
+
+        header("Location: " . $_SERVER['PHP_SELF'] . '?id=' . GETPOST('id') . '&page_y=' . GETPOST('page_y'));
+        exit;
+    }
+
 	if ($action == 'add' && $permissiontoadd && !$cancel) {
 		if (is_array(GETPOST('linked_object')) && !empty(GETPOST('linked_object'))) {
 			foreach (GETPOST('linked_object') as $linked_object_type) {
@@ -702,9 +714,9 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     print '<table id="tablelines" class="centpercent noborder noshadow">'; ?>
     <script>
         $(document).ready(function(){
-            $(".move-line").css("background-image",'url(<?php echo DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/grip.png'; ?>)');
-            $(".move-line").css("background-repeat","no-repeat");
-            $(".move-line").css("background-position","center center");
+            $(".sheet-move-line").css("background-image",'url(<?php echo DOL_URL_ROOT.'/theme/'.$conf->theme.'/img/grip.png'; ?>)');
+            $(".sheet-move-line").css("background-repeat","no-repeat");
+            $(".sheet-move-line").css("background-position","center center");
         });
     </script>
     <?php
@@ -733,14 +745,20 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
                 $groupQuestions = $group->fetchQuestionsOrderedByPosition();
 
                 print '<tr id="group-' . $group->id . '" class="line-row question-group">';
-                print '<td colspan="9">';
+                print '<td colspan="8">';
                 print '<div class="group-header" onclick="window.digiquali.sheet.toggleGroup(' . $group->id . ')">';
                 print '<span class="group-title">' . $group->getNomUrl(1) . '</span>';
                 print '<span class="toggle-icon">+</span>';
                 print '</div>';
                 print '</td>';
                 if ($object->status < $object::STATUS_LOCKED) {
-                    print '<td class="move-line ui-sortable-handle" onmousedown="window.digiquali.sheet.closeAllGroups()">';
+                    print '<td class="center">';
+                    print '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=unlinkQuestionGroup&questionGroupId=' . $group->id . '">';
+                    print img_delete();
+                    print '</a>';
+                    print '</td>';
+                    print '<td class="sheet-move-line ui-sortable-handle" onmousedown="window.digiquali.sheet.closeAllGroups()">';
+                    print '</td>';
                 } else {
                     print '<td>';
                 }
@@ -768,9 +786,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
                             ) . '</td>';
                         print '<td class="center">' . $question->getLibStatut(5) . '</td>';
                         print '<td class="center">';
-                        print '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?id=' . $id . '&amp;action=unlinkQuestion&questionId=' . $question->id . '">';
-                        print img_delete();
-                        print '</a>';
                         print '</td>';
                         print '</tr>';
                     }
@@ -802,7 +817,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
                 print '</a>';
                 print '</td>';
                 if ($object->status < $object::STATUS_LOCKED) {
-                    print '<td class="move-line ui-sortable-handle" onmousedown="window.digiquali.sheet.closeAllGroups()">';
+                    print '<td class="sheet-move-line ui-sortable-handle" onmousedown="window.digiquali.sheet.closeAllGroups()">';
                 } else {
                     print '<td>';
                 }
@@ -818,8 +833,8 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         print '<tr class="add-line">';
         print '<td class="maxwidth300 widthcentpercentminusx">';
         print '<div id="addChoice">';
-        print '<button type="button" id="addQuestionButton" class="butAction">' . img_picto('', $question->picto) . ' ' . $langs->trans("Question") . ' ' . img_picto('', 'fa-plus') . '</button>';
-        print '<button type="button" id="addGroupButton" class="butAction">' . img_picto('', $questionGroup->picto) . ' ' . $langs->trans("QuestionGroup") . ' ' . img_picto('', 'fa-plus') . '</button>';
+        print '<button type="button" id="addQuestionButton" class="butAction">' . img_picto('', $question->picto) . ' ' . $langs->trans("Question") . ' ' . img_picto('', 'fa-link') . '</button>';
+        print '<button type="button" id="addGroupButton" class="butAction">' . img_picto('', $questionGroup->picto) . ' ' . $langs->trans("QuestionGroup") . ' ' . img_picto('', 'fa-link') . '</button>';
         print '</div>';
         print '</td>';
         print '<td colspan="9">';

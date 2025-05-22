@@ -127,10 +127,14 @@ if (empty($reshook)) {
 	}
 
     if ($action == 'add_question') {
-        $object->addQuestion(GETPOST('questionId'));
+        $questionIds = GETPOST('questionId', 'array');
+        if (is_array($questionIds) && !empty($questionIds)) {
+            foreach ($questionIds as $questionId) {
+                $object->addQuestion($questionId);
+            }
+        }
 
         header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $object->id  . ($sheetId ? '&sheet_id=' . $sheetId : ''));
-
     }
 
 	if ($action == 'moveLine' && $permissiontoadd) {
@@ -141,6 +145,18 @@ if (empty($reshook)) {
 		}
 		$object->updateQuestionPosition($reIndexedIds);
 	}
+
+    if ($action == 'removeQuestion') {
+        $questionId = GETPOST('questionId', 'int');
+        if ($questionId > 0) {
+            $question->fetch($questionId);
+            $question->element = 'digiquali_'.$question->element;
+            $question->deleteObjectLinked('', '', $object->id, $object->table_element);
+
+            setEventMessages($langs->trans('RemoveQuestionFromGroup') . ' ' . $question->ref, array());
+        }
+        header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $object->id  . ($sheetId ? '&sheet_id=' . $sheetId : ''));
+    }
 
 	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
@@ -327,8 +343,6 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 	print '<div class="clearboth"></div>';
 
-
-
 	// Buttons for actions
 	if ($action != 'presend') {
 		print '<div class="tabsAction">';
@@ -392,16 +406,16 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
     print '<thead><tr class="liste_titre">';
     print '<td>' . $langs->trans('Ref') . '</td>';
     print '<td>' . $langs->trans('Description') . '</td>';
-    print '<td></td>';
+    print '<td class="right" colspan="2">'. $langs->trans('Action') .'</td>';
     print '<td class="center"></td>';
     print '</tr></thead>';
 
     $questionsLinked = $object->fetchQuestionsOrderedByPosition();
+    $alreadyAdded = [];
 
     if (is_array($questionsLinked) && !empty($questionsLinked)) {
         foreach ($questionsLinked as $questionLinked) {
                 $alreadyAdded[] = $questionLinked->id;
-                //SHOW LINE
                 print '<tr id="' . $questionLinked->id . '" class="line-row oddeven">';
                 print '<td>';
                 print img_picto('', $questionLinked->picto, 'class="pictofixedwidth"') . $questionLinked->ref;
@@ -414,10 +428,15 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
                 print '<td class="center">';
                 if ($object->status < Question::STATUS_LOCKED) {
                     print '<td class="move-line ui-sortable-handle">';
+                    print '</td>';
+                    print '<td class="center">';
+                    $url = $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&action=removeQuestion&questionId=' . $questionLinked->id . '&token=' . newToken();
+                    print '<a class="reposition delete-question" id="" href="' . $url . '">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
                 } else {
                     print '</td>';
                     print '<td>';
                 }
+
                 print '</td>';
                 print '</tr>';
             }
@@ -435,8 +454,21 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         print '<td>-</td>';
 
         print '<td>';
+        if (!empty($alreadyAdded)) {
+            $filter = 't.rowid NOT IN (' . implode(',', $alreadyAdded) . ')';
+        } else {
+            $filter = '';
+        }
+        $questionList = saturne_fetch_all_object_type('Question', '', '', 0, 0, ['customsql' => $filter]);
+        $questionArray = [];
+        if (is_array($questionList) && !empty($questionList)) {
+            foreach($questionList as $questionId => $questionSingle) {
+                $questionArray[$questionId] = img_picto('', $questionSingle->picto) . ' ' . $questionSingle->ref . ' - ' . $questionSingle->label;
+            }
+        }
 
-        print $question->selectQuestionList(GETPOST('questionId'), 'questionId', '', $langs->trans('SelectQuestion'), '', '', '', '', '', '', '', '', '', $alreadyAdded);
+
+        print $form->multiselectArray('questionId', $questionArray, GETPOST('questionId'), 0, 0, '', 0, 450, '', '', $langs->transnoentities('SelectMultipleQuestion'));
 
         print '<td class="center">';
         print '<input type="submit" class="button wpeo-button" value="' . $langs->trans("Add") . '">';

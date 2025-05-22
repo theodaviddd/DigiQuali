@@ -215,6 +215,8 @@ class QuestionGroup extends SaturneObject
                 $this->add_object_linked('digiquali_sheet', GETPOST('sheet_id'));
 
                 $sheet->updateQuestionsAndGroupsPosition([], [], true);
+                $sheet->call_trigger('SHEET_ADDQUESTIONGROUP', $user);
+
             }
         }
         return $result;
@@ -309,31 +311,29 @@ class QuestionGroup extends SaturneObject
 	 *
 	 * @param  User      $user    User that creates
 	 * @param  int       $fromid  ID of object to clone
-	 * @param  array     $options Options array
 	 * @return int                New object created, < 0 if KO
 	 * @throws Exception
 	 */
-	public function createFromClone(User $user, int $fromid, array $options): int
+	public function createFromClone(User $user, int $fromid): int
 	{
 		dol_syslog(__METHOD__, LOG_DEBUG);
 
-		global $conf;
 		$error = 0;
 
 		$object = new self($this->db);
-        $answer = new Answer($this->db);
 
 		$this->db->begin();
 
-		// Load source object
 		$object->fetchCommon($fromid);
+        $object->fetchObjectLinked('', '', $this->id, $this->table_element);
+
+        $previousQuestions = $object->linkedObjects['digiquali_question'];
 
 		// Reset some properties
 		unset($object->id);
 		unset($object->fk_user_creat);
 		unset($object->import_key);
 
-		$oldRef = $object->ref;
 
 		// Clear fields
 		if (property_exists($object, 'ref')) {
@@ -367,6 +367,11 @@ class QuestionGroup extends SaturneObject
 					$object->setCategories($categoryIds);
 				}
 			}
+            if (!empty($previousQuestions)) {
+                foreach ($previousQuestions as $previousQuestion) {
+                    $object->addQuestion($previousQuestion->id);
+                }
+            }
 		} else {
 			$error++;
 			$this->error  = $object->error;
@@ -506,13 +511,16 @@ class QuestionGroup extends SaturneObject
      * @param  int $questionId ID of question
      */
     public function addQuestion($questionId) {
+        global $user;
+
         $this->add_object_linked('digiquali_question', $questionId, $this->id, 'question_group');
+        $this->call_trigger('QUESTIONGROUP_ADDQUESTION', $user);
     }
 
     /**
      * Move questions
      */
-    public function updateQuestionGroupPosition($questionIds)
+    public function updateQuestionPosition($questionIds)
     {
 
         foreach ($questionIds as $position => $questionId) {
@@ -521,7 +529,7 @@ class QuestionGroup extends SaturneObject
             $sql .= ' WHERE fk_source = ' . $questionId;
             $sql .= ' AND sourcetype = \'digiquali_question\'';
             $sql .= ' AND fk_target = ' . $this->id;
-            $sql .= ' AND targettype = \'digiquali_question_group\'';
+            $sql .= ' AND targettype = \'digiquali_questiongroup\'';
             $res = $this->db->query($sql);
 
             if (!$res) {
@@ -542,23 +550,12 @@ class QuestionGroup extends SaturneObject
      */
     public function fetchQuestionsOrderedByPosition()
     {
-        $questions = [];
-        $sql = 'SELECT fk_source';
-        $sql .= ' FROM ' . MAIN_DB_PREFIX . 'element_element';
-        $sql .= ' WHERE fk_target = ' . $this->id;
-        $sql .= ' AND targettype = \'digiquali_questiongroup\'';
-        $sql .= ' AND sourcetype = \'digiquali_question\'';
-        $sql .= ' ORDER BY position ASC';
-        $res = $this->db->query($sql);
-        if ($res) {
-            while ($obj = $this->db->fetch_object($res)) {
+        $this->fetchObjectLinked('', '', $this->id, $this->table_element, 'OR', '', 'position');
 
-                $question = new Question($this->db);
-
-                $question->fetch($obj->fk_source);
-                $questions[] = $question;
-            }
+        if (!empty($this->linkedObjects['digiquali_question'])) {
+            return $this->linkedObjects['digiquali_question'];
+        } else {
+            return [];
         }
-        return $questions;
     }
 }
