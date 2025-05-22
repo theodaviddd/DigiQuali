@@ -816,4 +816,137 @@ class Sheet extends SaturneObject
         return parent::setLocked($user, $notrigger);
     }
 
+
+    /**
+     * Show answer repartition
+     *
+     * @param Question $question
+     * @param array $answers Array of answers
+     * @param array $questionAnswerStats Array of answer stats
+     *
+     * @return void
+     */
+    public function showAnswerRepartition(Question $question, array $answers, array $questionAnswerStats): void
+    {
+        global $langs;
+
+        require_once __DIR__ . '/../../saturne/class/saturnedashboard.class.php';
+
+        switch ($question->type) {
+            case 'UniqueChoice':
+            case 'OkKo':
+            case 'OkKoToFixNonApplicable':
+            case 'MultipleChoices':
+                if (!empty($answers)) {
+                    $data = [];
+                    $labels = [];
+
+                    foreach ($answers as $a) {
+                        $count = $questionAnswerStats[$question->id][$a->position]['nb_answers'] ?? 0;
+                        if ($count > 0) {
+                            $data[] = [$a->value, $count];
+                            $labels[] = ['label' => $a->value, 'color' => $a->color];
+                        }
+                    }
+
+                    if (!empty($data)) {
+                        $uniqueKey = 'q_' . $question->id . '_pie';
+                        $fileName = $uniqueKey . '.png';
+                        $fileUrl = DOL_URL_ROOT . '/viewimage.php?modulepart=digiquali&file=' . $fileName;
+
+                        $graph = new DolGraph();
+                        $graph->SetData($data);
+                        $graph->SetDataColor(array_column($labels, 'color'));
+                        $graph->SetType(['pie']);
+                        $graph->SetWidth(120);
+                        $graph->SetHeight(120);
+                        $graph->setShowLegend(0);
+                        $graph->draw($fileName, $fileUrl);
+                        print $graph->show();
+                    } else {
+                        print '<span class="opacitymedium">' . $langs->trans('NoData') . '</span>';
+                    }
+                }
+                break;
+            case 'Percentage':
+                $averagePercent = 0;
+
+                if (!empty($questionAnswerStats[$question->id])) {
+                    $answerCounter = 0;
+                    $answerSum = 0;
+
+                    foreach ($questionAnswerStats[$question->id] as $answerPercent) {
+                        $answerCounter++;
+                        $answerSum += $answerPercent['percentage'];
+                    }
+                    $averagePercent = $answerCounter > 0 ? $answerSum / $answerCounter : 0;
+                }
+
+                print '<div class="percentage-bar-container">';
+                print '<div class="percentage-bar-background">';
+                print '<div class="percentage-bar-fill" style="width: ' . $averagePercent . '%;"></div>';
+                print '</div>';
+                print '<div class="percentage-bar-label">' . $langs->trans("Average") . ' : ' . round($averagePercent) . '%</div>';
+                print '</div>';
+                break;
+
+            case 'Text':
+                break;
+
+            case 'Range':
+                $average = 0;
+                $count = 0;
+                foreach ($questionAnswerStats[$question->id] as $questionAnswer) {
+                    if (isset($questionAnswer['range'])) {
+                        $average += $questionAnswer['range'];
+                        $count++;
+                    }
+                }
+
+                $average = $count > 0 ? $average / $count : 0;
+
+                print '<div class="range-bar-container">';
+                print '<div class="range-average-indicator">';
+                print '<div class="range-average-value">';
+                print '<i class="fa fa-bullseye" aria-hidden="true"></i> ' . round($average, 1);
+                print '</div>';
+                print '<div class="range-average-label">' . $langs->trans("AverageValue") . '</div>';
+                print '</div>';
+                print '</div>';
+                break;
+
+            default:
+                print '<span class="opacitymedium">' . $langs->trans('UnsupportedQuestionType') . '</span>';
+                break;
+        }
+    }
+
+
+    /**
+     * Get average verdict
+     *
+     * @param array $controls Array of controls
+     *
+     * @return float
+     */
+    public function getAverageVerdict(array $controls): float
+    {
+
+        $controlsNumber = count($controls);
+
+        if ($controlsNumber > 0) {
+            $verdictSum = 0;
+
+            foreach ($controls as $control) {
+                if (!empty($control->verdict)) {
+                    $verdictSum += $control->verdict;
+                }
+            }
+
+            return $verdictSum / $controlsNumber;
+        }
+        return 0;
+    }
+
 }
+
