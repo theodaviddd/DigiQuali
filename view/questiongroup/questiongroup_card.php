@@ -1,5 +1,5 @@
 <?php
-/* Copyright (C) 2022-2023 EVARISK <technique@evarisk.com>
+/* Copyright (C) 2025 EVARISK <technique@evarisk.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php';
 require_once '../../class/questiongroup.class.php';
 require_once '../../class/question.class.php';
 require_once '../../class/sheet.class.php';
-require_once '../../core/modules/digiquali/questiongroup/mod_questiongroup_standard.php';
 require_once '../../class/answer.class.php';
 require_once '../../lib/digiquali_questiongroup.lib.php';
 require_once '../../lib/digiquali_answer.lib.php';
@@ -160,6 +159,9 @@ if (empty($reshook)) {
 
 	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
+
+    // Actions confirm_lock, confirm_archive
+    require_once __DIR__ . '/../../../saturne/core/tpl/actions/object_workflow_actions.tpl.php';
 }
 
 /*
@@ -455,18 +457,17 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
         print '<td>';
         if (!empty($alreadyAdded)) {
-            $filter = 't.rowid NOT IN (' . implode(',', $alreadyAdded) . ')';
+            $filter = ['customsql' => 't.rowid NOT IN (' . implode(',', $alreadyAdded) . ')'];
         } else {
-            $filter = '';
+            $filter = [];
         }
-        $questionList = saturne_fetch_all_object_type('Question', '', '', 0, 0, ['customsql' => $filter]);
+        $questionList = saturne_fetch_all_object_type('Question', '', '', 0, 0, $filter);
         $questionArray = [];
         if (is_array($questionList) && !empty($questionList)) {
             foreach($questionList as $questionId => $questionSingle) {
                 $questionArray[$questionId] = img_picto('', $questionSingle->picto) . ' ' . $questionSingle->ref . ' - ' . $questionSingle->label;
             }
         }
-
 
         print $form->multiselectArray('questionId', $questionArray, GETPOST('questionId'), 0, 0, '', 0, 450, '', '', $langs->transnoentities('SelectMultipleQuestion'));
 
