@@ -64,11 +64,13 @@ DisplaySurveyMediasSampleDescription = Afficher les médias d'exemple des questi
 ExtrafieldsSurveyManagement          = Gestion des attributs supplémentaires des questionnaires
 
 # Public interface - Interface publique
-AnswerPublicInterface             = Interface publique de réponse aux questions pour __OBJECT_ELEMENT_REF__
-AnswerPublicInterfaceTitle        = Titre de l'interface publique de réponse aux questions
-AnswerPublicInterfaceSubstitution = Traduction générique "TheObject" __REF__
-
-
+AnswerPublicInterface                        = Interface publique de réponse aux questions pour __OBJECT_ELEMENT_REF__
+AnswerPublicInterfaceTitle                   = Titre de l'interface publique de réponse aux questions
+AnswerPublicInterfaceSubstitution            = Traduction générique "TheObject" __REF__
+AnswerPublicInterfaceUseSignatory            = Activer la signature sur l'interface publique de réponse aux questions
+AnswerPublicInterfaceUseSignatoryDescription = Rend obligatoire l'utilisation de la signature sur l'interface publique de réponse aux questions
+AnswerPublicInterfaceShowTitle               = Activer le titre sur l'interface publique de réponse aux questions
+AnswerPublicInterfaceShowTitleDescription    = Permet d'afficher le titre du contrôle sur l'interface publique de réponse aux questions
 
 #
 # Questions
@@ -312,6 +314,18 @@ LinkFicheinter                                 = Activer le lien avec les fiches
 LinkFicheinterDescription                      = Permet la liaison entre les fiches d'intervention et les modèles
 LinkBom                                        = Activer le lien avec les nomenclatures BOM
 LinkBomDescription                             = Permet la liaison entre les nomenclatures BOM et les modèles
+LinkShipping                                   = Activer le lien avec les expéditions
+LinkShippingDescription                        = Permet la liaison entre les expéditions et les modèles
+LinkSupplier_order                             = Activer le lien avec les commandes fournisseurs
+LinkSupplier_orderDescription                  = Permet la liaison entre les commandes fournisseurs et les modèles
+LinkDigiquali_question                         = Activer le lien avec les questions
+LinkDigiquali_questionDescription              = Permet la liaison entre les questions et les modèles
+LinkDigiquali_answer                           = Activer le lien avec les réponses
+LinkDigiquali_answerDescription                = Permet la liaison entre les réponses et les modèles
+LinkDigiquali_control                          = Activer le lien avec les contrôles
+LinkDigiquali_controlDescription               = Permet la liaison entre les contrôles et les modèles
+LinkDigiquali_survey                           = Activer le lien avec les questionnaires
+LinkDigiquali_surveyDescription                = Permet la liaison entre les questionnaires et les modèles
 NoLotDefined                                   = Pas de numéro de lot/série trouvé
 SelectAProductFirst                            = Sélectionnez d'abord un produit
 ActionsOnControl                               = Événements liés au contrôle

@@ -581,7 +581,7 @@ class ActionsDigiquali
             $constArray['digiquali'] = [
                 'DisplayMedias' => [
                     'name'        => 'DisplayMediasSample',
-                    'description' => 'DisplayMediasSampleDescription',
+                    'description' => 'DisplayControlMediasSampleDescription',
                     'code'        => 'DIGIQUALI_CONTROL_DISPLAY_MEDIAS',
                 ],
                 'UseLargeSizeMedia' => [
