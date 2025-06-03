@@ -31,6 +31,22 @@ window.digiquali.sheet.event = function() {
   $( document ).on( 'click', '.toggle-group-in-tree', window.digiquali.sheet.toggleGroupInTree );
   $( document ).on( 'click', '#addQuestionButton, #addGroupButton', window.digiquali.sheet.buttonActions );
   $(document).on('mouseenter', '.sheet-move-line.ui-sortable-handle', window.digiquali.sheet.draganddrop);
+
+  const savedState = JSON.parse(localStorage.getItem('digiqualiGroupStates') || '{}');
+
+  $('.group-item').each(function () {
+    const groupId = $(this).data('id');
+    const subQuestions = $(this).next('.sub-questions');
+
+    if (savedState[groupId] === false) {
+      subQuestions.addClass('collapsed');
+      $(this).find('.toggle-group-in-tree').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+    } else if (savedState[groupId] === true) {
+      subQuestions.removeClass('collapsed');
+      $(this).find('.toggle-group-in-tree').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+    }
+  });
+
 };
 
 /**
@@ -91,13 +107,19 @@ window.digiquali.sheet.closeAllGroups = function () {
  * @version 20.1.0
  */
 window.digiquali.sheet.toggleGroupInTree = function () {
-  let subQuestions = $(this).closest('.group-item').next()[0];
-  $(this).toggleClass('fa-chevron-up fa-chevron-down');
+  const groupItem = $(this).closest('.group-item');
+  const groupId = groupItem.data('id');
+  const subQuestions = groupItem.next('.sub-questions');
 
-  if (subQuestions && subQuestions.classList.contains("sub-questions")) {
-    subQuestions.classList.toggle("collapsed");
-  }
-}
+  $(this).toggleClass('fa-chevron-up fa-chevron-down');
+  subQuestions.toggleClass('collapsed');
+
+  const isCollapsed = subQuestions.hasClass('collapsed');
+  const savedState = JSON.parse(localStorage.getItem('digiqualiGroupStates') || '{}');
+
+  savedState[groupId] = !isCollapsed;
+  localStorage.setItem('digiqualiGroupStates', JSON.stringify(savedState));
+};
 
 /**
  * Grey out the question or group selected
