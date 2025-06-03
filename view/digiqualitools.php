@@ -278,7 +278,7 @@ if (GETPOST('dataMigrationImportZip', 'alpha') && $permissionToWrite) {
                                     $questionGroup->addQuestion($newQuestionId);
                                     $answer->ismultientitymanaged = 0;
                                     $previousAnswers = $answer->fetchAll('', '', 0 , 0, ['customsql' => 'fk_question = ' . $previousQuestionId]);
-                   
+
                                     if (is_array($previousAnswers) && !empty($previousAnswers)) {
                                         foreach ($previousAnswers as $previousAnswer) {
                                             $previousAnswer->fk_question = $newQuestionId;
