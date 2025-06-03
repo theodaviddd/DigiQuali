@@ -40,7 +40,7 @@ require_once __DIR__ . '/../class/sheet.class.php';
 require_once __DIR__ . '/../lib/digiquali.lib.php';
 
 // Global variables definitions
-global $conf, $db, $langs, $user;
+global $conf, $db, $entity, $langs, $user;
 
 saturne_load_langs(['exports']);
 
@@ -271,15 +271,18 @@ if (GETPOST('dataMigrationImportZip', 'alpha') && $permissionToWrite) {
                         if (is_array($previousQuestions) && !empty($previousQuestions)) {
                             foreach ($previousQuestions as $previousQuestion) {
                                 $previousQuestionId = $previousQuestion->id;
+                                $previousQuestion->entity = $entity;
                                 $newQuestionId = $previousQuestion->create($user);
 
                                 if ($newQuestionId > 0) {
                                     $questionGroup->addQuestion($newQuestionId);
+                                    $answer->ismultientitymanaged = 0;
                                     $previousAnswers = $answer->fetchAll('', '', 0 , 0, ['customsql' => 'fk_question = ' . $previousQuestionId]);
-       
+                   
                                     if (is_array($previousAnswers) && !empty($previousAnswers)) {
                                         foreach ($previousAnswers as $previousAnswer) {
                                             $previousAnswer->fk_question = $newQuestionId;
+                                            $previousAnswer->entity = $entity;
                                             $newAnswerId = $previousAnswer->create($user);
                                             if ($newAnswerId <= 0) {
                                                 $error++;
