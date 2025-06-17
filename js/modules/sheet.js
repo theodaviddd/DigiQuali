@@ -40,10 +40,10 @@ window.digiquali.sheet.event = function() {
 
     if (savedState[groupId] === false) {
       subQuestions.addClass('collapsed');
-      $(this).find('.toggle-group-in-tree').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+      $(this).find('.toggle-group-in-tree').removeClass('fa-chevron-right').addClass('fa-chevron-down');
     } else if (savedState[groupId] === true) {
       subQuestions.removeClass('collapsed');
-      $(this).find('.toggle-group-in-tree').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+      $(this).find('.toggle-group-in-tree').removeClass('fa-chevron-down').addClass('fa-chevron-right');
     }
   });
 
