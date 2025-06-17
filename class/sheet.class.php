@@ -732,7 +732,7 @@ class Sheet extends SaturneObject
                     $questionsInGroup = $questionOrGroup->fetchQuestionsOrderedByPosition();
                     $groupHasQuestions = !empty($questionsInGroup);
                     $out .= '  <li class="group-item ' . ($typeSelected == 'questiongroup' && $idSelected == $questionOrGroup->id ? 'selected' : '') . '" data-id="' . $questionOrGroup->id . '">';
-                    $out .= '    <span class="icon fas ' . ($groupHasQuestions ? 'fa-chevron-up' : '') . ' fa-fw toggle-group-in-tree" style="margin-right: 10px;"></span>';
+                    $out .= '    <span class="icon fas ' . ($groupHasQuestions ? 'fa-chevron-right' : '') . ' fa-fw toggle-group-in-tree" style="margin-right: 10px;"></span>';
                     $out .= '    <span class="icon fas fa-folder fa-2x"></span>';
                     $out .= '    <a href="' . $questionGroupCardUrl . '?id=' . $questionOrGroup->id . '&sheet_id=' . $this->id . '" class="group-item-link">';
                     $out .= '      <div class="title-container">';
