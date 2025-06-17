@@ -67,7 +67,9 @@ window.digiquali.object.event = function() {
   $(document).on( 'keyup', '.question-comment', window.digiquali.object.showCommentUnsaved);
   $(document).on( 'change', '.question-answer', window.digiquali.object.changeStatusQuestion);
   $(document).on( 'click', '.answer:not(.disable)', window.digiquali.object.changeStatusQuestion);
-  $(document).on('input', '.question-answer[type="range"]', window.digiquali.object.rangePercent);
+  $(document).on('input', '.question-answer[type="range"]', function () {
+    window.digiquali.object.rangePercent.call(this, false);
+  });
 };
 
 /**
@@ -225,7 +227,7 @@ window.digiquali.object.saveAnswer = function(questionId, answer, comment, quest
  *
  * @return {void}
  */
-window.digiquali.object.rangePercent = function() {
+window.digiquali.object.rangePercent = function(fromInit) {
   const mobile      = window.saturne.toolbox.isPhone();
   const slider      = $(this);
   const value       = parseFloat(slider.val());
@@ -235,6 +237,10 @@ window.digiquali.object.rangePercent = function() {
   const sliderPos   = slider.position().left;
   const sliderTop   = slider.position().top;
   var thumbWidth    = mobile ? 36 : 70;
+  let questionId   = slider.closest('.table-id').attr('data-questionId');
+  let publicInterface = $(this).closest('.table-id-' + questionId).attr('data-publicInterface');
+  let autoSave        = $(this).closest('.table-id-' + questionId).attr('data-autoSave');
+  let questionGroup   = $(this).closest('.group-question').attr('id');
 
   slider.parent().find('.range-percent').remove();
 
@@ -258,6 +264,15 @@ window.digiquali.object.rangePercent = function() {
   slider.attr('value', rangePercentValue);
 
   slider.parent().append(rangePercent);
+
+  if (!fromInit) {
+    if (!publicInterface && autoSave == 1 && !$(this).hasClass('multiple-answers')) {
+      window.digiquali.object.saveAnswer(questionId, rangePercent, comment, questionGroup);
+    } else {
+      window.digiquali.object.updateButtonsStatus();
+    }
+  }
+
 }
 
 /**
@@ -269,6 +284,6 @@ window.digiquali.object.rangePercent = function() {
  */
 window.digiquali.object.placePercents = function() {
   $('.question-answer[type="range"]').each(function() {
-    window.digiquali.object.rangePercent.call(this);
+    window.digiquali.object.rangePercent.call(this, true);
   });
 }
