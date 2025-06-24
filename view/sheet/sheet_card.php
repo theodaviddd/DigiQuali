@@ -866,7 +866,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
         print '<input type="hidden" name="token" value="' . newToken() . '">';
         print '<input type="hidden" name="id" value="' . $id . '">';
         print '<td class="widthcentpercentminusx">';
-        print img_picto('', $questionGroup->picto, 'class="pictofixedwidth"') . $questionGroup->selectQuestionGroupList(0, 'questionGroupId', 's.status = ' . QuestionGroup::STATUS_VALIDATED, '1', 0, 0, array(), '', 0, 0, 'maxwidth600 minwidth400 widthcentpercentminusx', '', false, $questionsAndGroupsIdsArray['questiongroup']);
+        print img_picto('', $questionGroup->picto, 'class="pictofixedwidth"') . $questionGroup->selectQuestionGroupList(0, 'questionGroupId', 's.status IN (' . QuestionGroup::STATUS_VALIDATED . ', ' . QuestionGroup::STATUS_LOCKED . ')', '1', 0, 0, array(), '', 0, 0, 'maxwidth600 minwidth400 widthcentpercentminusx', '', false, $questionsAndGroupsIdsArray['questiongroup']);
         print '</td>';
         print '<td>';
         print '<input type="hidden" name="action" value="addQuestionGroup">';
