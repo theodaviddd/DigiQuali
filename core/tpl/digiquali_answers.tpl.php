@@ -55,7 +55,7 @@ if (is_array($questionsAndGroups) && !empty($questionsAndGroups)) {
             }
             
             print '<div class="digiquali-question-group">';
-            print '<h3>' . img_picto('', $questionGroup->picto) . '&nbsp; ' . htmlspecialchars($questionGroup->label) . ' <span class="badge badge-info" style="margin-left: 10px;">' . $answeredQuestions . '/' . $totalQuestions . '</span></h3>';
+            print '<h3>' . img_picto('', $questionGroup->picto) . '&nbsp; ' . htmlspecialchars($questionGroup->label) . ' <span class="badge badge-info" style="margin-left: 10px;" title="Nombre de questions répondues">' . $answeredQuestions . '/' . $totalQuestions . ' réponses aux questions</span></h3>';
             if (!empty($questionGroup->description)) {
                 print '<p class="group-description">' . nl2br(htmlspecialchars($questionGroup->description)) . '</p>';
             }
