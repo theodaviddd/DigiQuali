@@ -39,7 +39,7 @@ if (is_array($questionsAndGroups) && !empty($questionsAndGroups)) {
             $questionGroup->fetch($questionGroupId);
             $groupQuestions = $questionGroup->fetchQuestionsOrderedByPosition();
             print '<div class="digiquali-question-group">';
-            print '<h3>' . img_picto('', $questionGroup->picto) . ' ' . htmlspecialchars($questionGroup->label) . '</h3>';
+            print '<h3>' . img_picto('', $questionGroup->picto) . '&nbsp; ' . htmlspecialchars($questionGroup->label) . '</h3>';
             if (!empty($questionGroup->description)) {
                 print '<p class="group-description">' . nl2br(htmlspecialchars($questionGroup->description)) . '</p>';
             }
