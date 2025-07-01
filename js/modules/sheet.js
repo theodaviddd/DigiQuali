@@ -31,6 +31,7 @@ window.digiquali.sheet.event = function() {
   $( document ).on( 'click', '.toggle-group-in-tree', window.digiquali.sheet.toggleGroupInTree );
   $( document ).on( 'click', '#addQuestionButton, #addGroupButton', window.digiquali.sheet.buttonActions );
   $(document).on('mouseenter', '.sheet-move-line.ui-sortable-handle', window.digiquali.sheet.draganddrop);
+  $(document).on('mouseenter', '.group-question-handle', window.digiquali.sheet.dragandDropInGroup);
 
   const savedState = JSON.parse(localStorage.getItem('digiqualiGroupStates') || '{}');
 
@@ -188,3 +189,66 @@ window.digiquali.sheet.draganddrop = function () {
     }
   });
 };
+
+/**
+ * Drag and drop for questions within a group
+ *
+ * @since   20.1.0
+ * @version 20.1.0
+ *
+ * @return {void}
+ */
+window.digiquali.sheet.dragandDropInGroup = function () {
+  const $handle = $(this);
+  const groupId = $handle.data('group-id');
+
+  $(this).css('cursor', 'pointer');
+
+  if ($('#tablelines tbody').hasClass('ui-sortable')) {
+    $('#tablelines tbody').sortable('destroy');
+  }
+
+  $('#tablelines tbody').sortable({
+    handle: '.group-question-handle',
+    items: `.group-question-${groupId}`,
+    tolerance: 'intersect',
+    over: function() {
+      $(this).css('cursor', 'grabbing');
+    },
+    stop: function(event, ui) {
+      $(this).css('cursor', 'default');
+      let token = $('.fiche').find('input[name="token"]').val();
+
+      let separator = '&'
+      if (document.URL.match(/action=/)) {
+        document.URL = document.URL.split(/\?/)[0]
+        separator = '?'
+      }
+
+      let lineOrder = [];
+      $(`.group-question-${groupId}`).each(function() {
+        const questionId = $(this).attr('id').replace('question-', '');
+        lineOrder.push(questionId);
+      });
+
+      window.saturne.loader.display($('.side-nav .question-list'));
+
+      $.ajax({
+        url: document.URL + separator + "action=moveLineInGroup&token=" + token + "&groupId=" + groupId,
+        type: "POST",
+        data: JSON.stringify({
+          order: lineOrder
+        }),
+        processData: false,
+        contentType: false,
+        success: function (resp) {
+          $('.side-nav .question-list').html($(resp).find('.side-nav .question-list'));
+          window.saturne.loader.remove($('.side-nav .question-list'));
+        },
+        error: function() {}
+      });
+    }
+  });
+};
+
+

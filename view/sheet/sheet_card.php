@@ -228,6 +228,18 @@ if (empty($reshook)) {
 		}
 	}
 
+	if ($action == 'moveLineInGroup' && $permissiontoadd) {
+		$idsArray = json_decode(file_get_contents('php://input'), true);
+		$groupId = GETPOST('groupId', 'int');
+
+		if ($groupId > 0 && is_array($idsArray['order']) && !empty($idsArray['order'])) {
+			$questionGroup->fetch($groupId);
+			$ids = array_values($idsArray['order']);
+			$reIndexedIds = array_combine(range(1, count($ids)), array_values($ids));
+			$questionGroup->updateQuestionPosition($reIndexedIds);
+		}
+	}
+
 	// Action to delete
 	if ($action == 'confirm_delete' && !empty($permissiontodelete)) {
 		if (!($object->id > 0)) {
@@ -766,7 +778,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
                 if (is_array($groupQuestions) && !empty($groupQuestions)) {
                     foreach ($groupQuestions as $question) {
-                        print '<tr id="question-' . $question->id . '" class="hidden group-question group-question-'. $group->id .'">';
+                        print '<tr id="question-' . $question->id . '" class="hidden group-question group-question-'. $group->id .' line-row-group" data-group-id="' . $group->id . '">';
                         print '<td style="padding-left: 20px;">' . $question->getNomUrl(1) . '</td>';
                         print '<td>' . $question->label . '</td>';
                         print '<td>' . $question->description . '</td>';
@@ -786,6 +798,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
                             ) . '</td>';
                         print '<td class="center">' . $question->getLibStatut(5) . '</td>';
                         print '<td class="center">';
+                        print '</td>';
+                        if ($object->status < $object::STATUS_LOCKED) {
+                            print '<td class="sheet-move-line ui-sortable-handle group-question-handle" data-group-id="' . $group->id . '">';
+                        } else {
+                            print '<td>';
+                        }
                         print '</td>';
                         print '</tr>';
                     }
