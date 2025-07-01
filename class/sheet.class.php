@@ -515,7 +515,7 @@ class Sheet extends SaturneObject
      *
      * @param array $questionIds Array containing position and ids of questions and group questions in sheet
      */
-    public function updateQuestionsAndGroupsPosition(array|null $questionIds, array|null $questionGroupIds, $reindexLast = false)
+    public function updateQuestionsAndGroupsPosition(?array $questionIds, ?array $questionGroupIds, $reindexLast = false)
     {
         $this->db->begin();
 
